@@ -9,6 +9,12 @@
     "dev": "nodemon server.js",
     "test": "jest -i"
   },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "app.test.js"
+    ]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
