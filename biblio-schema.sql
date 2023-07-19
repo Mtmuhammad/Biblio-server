@@ -4,8 +4,8 @@ CREATE TABLE users (
    first_name TEXT NOT NULL,
    last_name TEXT NOT NULL,
    password TEXT NOT NULL,
-   image TEXT,
-   country TEXT
+   country TEXT NULL,
+   token TEXT NULL
 );
 CREATE TABLE collections (
    id SERIAL PRIMARY KEY,
