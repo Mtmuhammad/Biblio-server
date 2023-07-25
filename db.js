@@ -2,20 +2,22 @@
 
 /**Database setup for biblio */
 const { Client } = require("pg");
-const { getDatabaseUri } = require("./config");
+const { getDatabaseUri, HOST} = require("./config");
 
 let db;
 
 if (process.env.NODE_ENV === "production") {
   db = new Client({
-    connectionString: getDatabaseUri(),
+    database: getDatabaseUri(),
     ssl: {
       rejectUnauthorized: false,
     },
+    host: HOST
   });
 } else {
   db = new Client({
-    connectionString: getDatabaseUri(),
+    database: getDatabaseUri(),
+    host: HOST
   });
 }
 

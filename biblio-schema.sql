@@ -4,8 +4,8 @@ CREATE TABLE users (
    first_name TEXT NOT NULL,
    last_name TEXT NOT NULL,
    password TEXT NOT NULL,
-   country TEXT NULL,
-   token TEXT NULL
+   token TEXT NULL,
+   is_admin BOOLEAN DEFAULT FALSE
 );
 CREATE TABLE collections (
    id SERIAL PRIMARY KEY,

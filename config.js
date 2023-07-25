@@ -7,6 +7,8 @@ require("colors");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 const PORT = +process.env.PORT || 3001;
+const HOST = process.env.PGHOST
+
 
 /**Use dev database, testing database, or via environment variable, 
 the production database */
@@ -25,6 +27,7 @@ console.log("SECRET KEY:".yellow, SECRET_KEY);
 console.log("PORT:".yellow, PORT.toString());
 console.log("BCRYPT_WORK_FACTOR:".yellow, BCRYPT_WORK_FACTOR);
 console.log("DATABASE:".yellow, getDatabaseUri());
+console.log("HOST:".yellow,HOST);
 console.log("---");
 
 module.exports = {
@@ -32,4 +35,5 @@ module.exports = {
   PORT,
   BCRYPT_WORK_FACTOR,
   getDatabaseUri,
+  HOST
 };
