@@ -1,0 +1,25 @@
+{
+   "$schema": "https://json-schema.org/draft/2019-09/schema",
+   "$id": "http://example.com/example.json",
+   "type": "object",
+   "required": [
+      "id",
+      "email",
+      "isAdmin"
+   ],
+   "properties": {
+      "id": {
+         "type": "integer"
+      },
+      "email": {
+         "type": "string",
+         "format": "email",
+         "minLength": "5",
+         "maxLength": "30"
+      },
+      "isAdmin": {
+         "type": "boolean",
+         "default": false
+      }
+   }
+}
