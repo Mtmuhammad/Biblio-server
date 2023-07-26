@@ -218,6 +218,7 @@ class User {
    */
 
   static async saveRefreshToken(id, token) {
+    // save refresh token to database
     const result = await db.query(
       `
     UPDATE users
@@ -230,7 +231,63 @@ class User {
     );
 
     const user = result.rows[0];
+    // if no user found, throw error
     if (!user) throw new NotFoundError(`No user found!`);
+    return user;
+  }
+
+  /** Given a refresh token, finds user data. User data is used to sign a new
+   * access token.
+   *
+   * Returns => {id, first_name, last_name, email, isAdmin}
+   *
+   * Throws NotFoundError if no user is found
+   */
+
+  static async findToken(refreshToken) {
+    // retrieve user data using refresh token
+    const result = await db.query(
+      `
+    SELECT
+      id,
+      email,
+      first_name AS "firstName",
+      last_name AS "lastName",
+      is_admin AS "isAdmin"
+    FROM users
+    WHERE token = $1`,
+      [refreshToken]
+    );
+
+    const user = result.rows[0];
+
+    // if no user found, throw error
+    if (!user) throw new NotFoundError(`No user found!`);
+    return user;
+  }
+
+  /** Given an id number, removes user refresh token from database on logout.
+   *
+   * Returns => {id, token}
+   *
+   * Throws NotFoundError if no user found
+   */
+
+  static async removeRefreshToken(id) {
+    // remove refresh token from database if user is found
+    const result = await db.query(
+      `
+    UPDATE users
+    SET token = null
+    WHERE id = $1
+    RETURNING id, token`,
+      [id]
+    );
+
+    const user = result.rows[0];
+
+    //if no user is found, throw error
+    if (!user) throw new NotFoundError("No user found!");
     return user;
   }
 }

@@ -13,6 +13,8 @@ const {
   commonAfterEach,
   commonBeforeEach,
   commonBeforeAll,
+  u1refreshToken,
+  u2refreshToken,
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -249,6 +251,90 @@ describe("remove", () => {
   test("should throw not found error", async () => {
     try {
       await User.remove(4);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+});
+
+/*******save refresh token  *******/
+describe("saveRefreshToken", () => {
+  test("should save user refresh token", async () => {
+    const { refreshToken } = await User.saveRefreshToken(2, u2refreshToken);
+    const res = await db.query(`SELECT token FROM users WHERE id = 2`);
+    expect(res.rows.length).toEqual(1);
+    expect(res.rows[0].token).toEqual(refreshToken);
+  });
+  test("should save admin user refresh token", async () => {
+    const { refreshToken } = await User.saveRefreshToken(1, u1refreshToken);
+    const res = await db.query(`SELECT token FROM users WHERE id = 1`);
+    expect(res.rows.length).toEqual(1);
+    expect(res.rows[0].token).toEqual(refreshToken);
+  });
+  test("should throw not found if user does not exist", async () => {
+    try {
+      await User.saveRefreshToken(4, u1refreshToken);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+});
+
+/****find token ******/
+
+describe("findToken", () => {
+  test("should find and return user given a refresh token", async () => {
+    await User.saveRefreshToken(2, u2refreshToken);
+    const foundUser = await User.findToken(u2refreshToken);
+    expect(foundUser).toEqual({
+      email: "test2@yahoo.com",
+      firstName: "Test2",
+      id: 2,
+      isAdmin: false,
+      lastName: "User2",
+    });
+  });
+  test("should find and return admin user given a refresh token", async () => {
+    await User.saveRefreshToken(1, u1refreshToken);
+    const foundUser = await User.findToken(u1refreshToken);
+    expect(foundUser).toEqual({
+      email: "test1@yahoo.com",
+      firstName: "Test1",
+      id: 1,
+      isAdmin: true,
+      lastName: "User1",
+    });
+  });
+  test("should throw not found if user not found", async () => {
+    try {
+      await User.findToken(u1refreshToken);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+});
+
+/*** removeRefreshToken *****/
+
+describe("removeRefreshToken", () => {
+  test("should remove user refresh token", async () => {
+    await User.saveRefreshToken(2, u2refreshToken);
+    await User.removeRefreshToken(2);
+    const res = await db.query(`SELECT token FROM users WHERE id = 2`);
+    expect(res.rows[0]).toEqual({ token: null });
+  });
+  test("should remove admin user refresh token", async () => {
+    await User.saveRefreshToken(1, u1refreshToken);
+    await User.removeRefreshToken(1);
+    const res = await db.query(`SELECT token FROM users WHERE id = 1`);
+    expect(res.rows[0]).toEqual({ token: null });
+  });
+  test("should throw NotFoundError", async () => {
+    try {
+      await User.removeRefreshToken(4);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();

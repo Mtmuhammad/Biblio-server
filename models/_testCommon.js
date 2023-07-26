@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../db");
 const { BCRYPT_WORK_FACTOR } = require("../config");
+const { createRefreshToken } = require("../helpers/tokens");
 
 async function commonBeforeAll() {
   // no inspection SqlWithoutWhere
@@ -33,9 +34,22 @@ async function commonAfterAll() {
   await db.end();
 }
 
+const u1refreshToken = createRefreshToken({
+  id: 1,
+  email: "new1@yahoo.com",
+  isAdmin: true,
+});
+const u2refreshToken = createRefreshToken({
+  id: 1,
+  email: "new2@yahoo.com",
+  isAdmin: false,
+});
+
 module.exports = {
   commonAfterAll,
   commonAfterEach,
   commonBeforeAll,
   commonBeforeEach,
+  u1refreshToken,
+  u2refreshToken,
 };

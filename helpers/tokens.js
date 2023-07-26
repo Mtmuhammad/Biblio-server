@@ -4,7 +4,8 @@ const tokenNewSchema = require("../schemas/tokenNew.json");
 const { BadRequestError } = require("../expressError");
 require("dotenv").config();
 
-/** return signed JWT from user data */
+/** return signed JWT from user data. Data is validated
+ * though JSON schema.  */
 
 const createToken = (user) => {
   console.assert(
@@ -29,6 +30,9 @@ const createToken = (user) => {
   });
 };
 
+/**create signed refresh token given user payload. Data is validated
+ * though JSON schema. 
+ */
 const createRefreshToken = (user) => {
   console.assert(
     user.isAdmin !== undefined,

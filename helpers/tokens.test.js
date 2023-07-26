@@ -27,7 +27,6 @@ describe("createToken", () => {
       isAdmin: true,
     });
     const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log(payload);
     expect(payload).toEqual({
       iat: expect.any(Number),
       exp: expect.any(Number),
