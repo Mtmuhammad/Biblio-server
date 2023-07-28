@@ -6,10 +6,13 @@ const { createRefreshToken } = require("../helpers/tokens");
 async function commonBeforeAll() {
   // no inspection SqlWithoutWhere
   await db.query("DELETE FROM users");
+  await db.query("DELETE FROM collections");
 
   // alter id sequences for testing
   await db.query(`ALTER SEQUENCE users_id_seq restart with 1;`);
+  await db.query(`ALTER SEQUENCE collections_id_seq restart with 1;`);
 
+  // insert users test data
   await db.query(
     `INSERT INTO users 
     (email, first_name, last_name, password, is_admin) 
@@ -20,6 +23,12 @@ async function commonBeforeAll() {
       await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
     ]
   );
+
+  // insert collections test data
+  await db.query(`
+  INSERT INTO collections
+  (title, owner)
+  VALUES ('First Collection', 1), ('Second Collection', 2)`);
 }
 
 async function commonBeforeEach() {
