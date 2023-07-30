@@ -1,4 +1,2 @@
 /node_modules
 .env
-/models/collection.js
-/models/collection.test.js

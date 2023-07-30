@@ -27,8 +27,11 @@ async function commonBeforeAll() {
   // insert collections test data
   await db.query(`
   INSERT INTO collections
-  (title, owner)
-  VALUES ('First Collection', 1), ('Second Collection', 2)`);
+  (title, owner, is_private)
+  VALUES 
+  ('First Collection', 1, TRUE), 
+  ('Second Collection', 2, FALSE),
+  ('Third Collection', 1, FALSE)`);
 }
 
 async function commonBeforeEach() {
