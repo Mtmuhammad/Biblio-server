@@ -155,6 +155,9 @@ class User {
    */
 
   static async update(id, data) {
+    //if no data, throw an error
+    if (!data) throw new BadRequestError(`No data included!`);
+
     // if password needs to be updated
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);

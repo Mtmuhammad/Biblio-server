@@ -1,14 +1,8 @@
 "use strict";
 
 const db = require("../db");
-const bcrypt = require("bcrypt");
 const { sqlForPartialUpdate } = require("../helpers/sql");
-const {
-  BadRequestError,
-  UnauthorizedError,
-  NotFoundError,
-} = require("../expressError");
-const { BCRYPT_WORK_FACTOR } = require("../config");
+const { BadRequestError, NotFoundError } = require("../expressError");
 
 /** Related functions for a user collection */
 
@@ -140,6 +134,9 @@ class Collection {
    */
 
   static async update(id, data) {
+    //if no data, throw an error
+    if (!data) throw new BadRequestError(`No data included!`);
+    
     // set column names to match database and change data entry to prevent sql injection
     const { setCols, values } = sqlForPartialUpdate(data, {
       isPrivate: "is_private",

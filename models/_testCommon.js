@@ -7,10 +7,12 @@ async function commonBeforeAll() {
   // no inspection SqlWithoutWhere
   await db.query("DELETE FROM users");
   await db.query("DELETE FROM collections");
+  await db.query("DELETE FROM books");
 
   // alter id sequences for testing
   await db.query(`ALTER SEQUENCE users_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE collections_id_seq restart with 1;`);
+  await db.query(`ALTER SEQUENCE books_id_seq restart with 1;`);
 
   // insert users test data
   await db.query(
@@ -32,6 +34,16 @@ async function commonBeforeAll() {
   ('First Collection', 1, TRUE), 
   ('Second Collection', 2, FALSE),
   ('Third Collection', 1, FALSE)`);
+
+  // insert books test data
+  await db.query(`
+  INSERT INTO books
+  (collection_id, user_id, key, author, title, description, year)
+  VALUES
+  (1, 1, '/works/978643', 'Ralph Ellison','Shadow and Act', 'Brief Description 1', 1964),
+  (1, 1, '/works/977643', 'Ralph Ellison','The Invisible Man', 'Brief Description 2', 1952),
+  (2, 2, '/works/976643', 'Toni Morrison','Beloved', 'Brief Description 3', 1987),
+  (2, 2, '/works/975643', 'Toni Morrison','The Bluest Eye', 'Brief Description 4', 1970)`);
 }
 
 async function commonBeforeEach() {

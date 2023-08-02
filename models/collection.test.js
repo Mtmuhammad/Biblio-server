@@ -3,7 +3,6 @@
 const {
   NotFoundError,
   BadRequestError,
-  UnauthorizedError,
 } = require("../expressError");
 const db = require("../db");
 const Collection = require("./collection");
@@ -238,6 +237,14 @@ describe("update", () => {
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+  test("should throw error if no data included", async () => {
+    try {
+      await Collection.update(8);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
 });

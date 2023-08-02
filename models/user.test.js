@@ -225,12 +225,20 @@ describe("update", () => {
       isAdmin: true,
     });
   });
-  test("should throw not found error", async () => {
+  test("should throw error if user not found", async () => {
     try {
       await User.update(4, { email: "new1@gmail.com" });
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+  test("should throw error if no data included", async () => {
+    try {
+      await User.update(4);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
 });
