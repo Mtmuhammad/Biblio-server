@@ -8,11 +8,13 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM users");
   await db.query("DELETE FROM collections");
   await db.query("DELETE FROM books");
+  await db.query("DELETE FROM forums");
 
   // alter id sequences for testing
   await db.query(`ALTER SEQUENCE users_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE collections_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE books_id_seq restart with 1;`);
+  await db.query(`ALTER SEQUENCE forums_id_seq restart with 1;`);
 
   // insert users test data
   await db.query(
@@ -44,6 +46,15 @@ async function commonBeforeAll() {
   (1, 1, '/works/977643', 'Ralph Ellison','The Invisible Man', 'Brief Description 2', 1952),
   (2, 2, '/works/976643', 'Toni Morrison','Beloved', 'Brief Description 3', 1987),
   (2, 2, '/works/975643', 'Toni Morrison','The Bluest Eye', 'Brief Description 4', 1970)`);
+
+  // insert forum test data
+  await db.query(`
+  INSERT INTO forums
+  (title, description, creator)
+  VALUES
+  ('Announcements', 'This forum is a special forum for general announcements.', 1),
+  ('Technology', 'Latest technology news and updates from our community.', 1),
+  ('Marketplaces', 'This forum is a special forum for marketplace support.', 1)`);
 }
 
 async function commonBeforeEach() {

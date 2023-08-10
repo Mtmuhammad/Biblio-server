@@ -130,7 +130,7 @@ class Collection {
    *
    * Returns => {id, title, owner, date, isPrivate}
    *
-   * Throws NotFoundError if no user found.
+   * Throws NotFoundError if no collection found.
    */
 
   static async update(id, data) {

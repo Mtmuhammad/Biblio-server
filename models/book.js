@@ -122,7 +122,7 @@ class Book {
    *
    * Returns => {id, collectionId, userId, key, author, title, description, year, status, date}
    *
-   * Throws NotFoundError if no user found
+   * Throws NotFoundError if no book found
    */
 
   static async update(id, data) {
