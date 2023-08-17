@@ -131,6 +131,7 @@ class Collection {
    * Returns => {id, title, owner, date, isPrivate}
    *
    * Throws NotFoundError if no collection found.
+   * Throws BadRequestError if no data submitted.
    */
 
   static async update(id, data) {

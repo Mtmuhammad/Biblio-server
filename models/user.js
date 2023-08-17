@@ -244,7 +244,8 @@ class User {
    *
    * Returns => {id, first_name, last_name, email, isAdmin}
    *
-   * Throws NotFoundError if no user is found
+   * Throws NotFoundError if no user is found.
+   * Throws BadRequestError if no data submitted.
    */
 
   static async findToken(refreshToken) {

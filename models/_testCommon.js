@@ -9,12 +9,14 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM collections");
   await db.query("DELETE FROM books");
   await db.query("DELETE FROM forums");
+  await db.query("DELETE FROM subjects");
 
   // alter id sequences for testing
   await db.query(`ALTER SEQUENCE users_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE collections_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE books_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE forums_id_seq restart with 1;`);
+  await db.query(`ALTER SEQUENCE subjects_id_seq restart with 1;`);
 
   // insert users test data
   await db.query(
@@ -55,6 +57,13 @@ async function commonBeforeAll() {
   ('Announcements', 'This forum is a special forum for general announcements.', 1),
   ('Technology', 'Latest technology news and updates from our community.', 1),
   ('Marketplaces', 'This forum is a special forum for marketplace support.', 1)`);
+
+  // insert subject test data
+  await db.query(`
+  INSERT INTO subjects
+  (name, creator)
+  VALUES
+  ('General', 1), ('Ideas', 2), ('Help', 1)`);
 }
 
 async function commonBeforeEach() {

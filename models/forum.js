@@ -97,7 +97,8 @@ class Forum {
    *
    * Returns  => {id, title, description, creator}
    *
-   * Throws NotFoundError if no forum is found
+   * Throws NotFoundError if no forum is found.
+   * Throws BadRequestError if no data submitted.
    */
 
   static async update(id, data) {
