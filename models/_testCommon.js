@@ -10,6 +10,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM books");
   await db.query("DELETE FROM forums");
   await db.query("DELETE FROM subjects");
+  await db.query("DELETE FROM posts");
 
   // alter id sequences for testing
   await db.query(`ALTER SEQUENCE users_id_seq restart with 1;`);
@@ -17,6 +18,7 @@ async function commonBeforeAll() {
   await db.query(`ALTER SEQUENCE books_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE forums_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE subjects_id_seq restart with 1;`);
+  await db.query(`ALTER SEQUENCE posts_id_seq restart with 1;`);
 
   // insert users test data
   await db.query(
@@ -64,6 +66,18 @@ async function commonBeforeAll() {
   (name, creator)
   VALUES
   ('General', 1), ('Ideas', 2), ('Help', 1)`);
+
+  // insert post test data
+  await db.query(`
+  INSERT INTO posts
+  (creator, title, post_text, subject, forum, is_private)
+  VALUES
+  (1, 'This is the first post.', 'This is the first post description.', 1, 1, false), 
+  (1, 'This is the second post.', 'This is the second post description.', 1, 1, false),
+  (2, 'This is the third post.', 'This is the third post description.', 2, 2, false),
+  (2, 'This is the fourth post.', 'This is the fourth post description.', 2, 2, true),
+  (2, 'This is the fifth post.', 'This is the fifth post description.', 3, 3, true),
+  (1, 'This is the sixth post.', 'This is the sixth post description.', 3, 3, true)`);
 }
 
 async function commonBeforeEach() {
