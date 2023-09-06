@@ -294,6 +294,31 @@ class User {
     if (!user) throw new NotFoundError("No user found!");
     return user;
   }
+
+  /** Given a user id, returns the full name of the user.
+   *
+   * Returns => {fullName}
+   *
+   * Throws NotFoundError if user not found
+   */
+  static async getFullName(id) {
+    // retrieve user first and last name using id
+    const result = await db.query(
+      `
+    SELECT first_name AS "firstName", last_name AS "lastName"
+    FROM users 
+    WHERE id = $1
+    `,
+      [id]
+    );
+
+    const user = result.rows[0]
+     //if no user is found, throw error
+     if (!user) throw new NotFoundError("No user found!");
+
+     return {fullName: `${user.firstName} ${user.lastName}`}
+   
+  }
 }
 
 module.exports = User;
