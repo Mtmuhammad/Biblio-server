@@ -84,34 +84,37 @@ describe("findAllPublic", () => {
     expect(res.length).toBe(3);
     expect(res).toEqual([
       {
-        creator: 1,
+        creatorId: 1,
         date: getCurrentDate(),
-        forum: 1,
+        forum: "Announcements",
         id: 1,
         isPrivate: false,
         postText: "This is the first post description.",
-        subject: 1,
+        subject: "General",
         title: "This is the first post.",
+        fullName: "Test1 User1"
       },
       {
-        creator: 1,
+        creatorId: 1,
         date: getCurrentDate(),
-        forum: 1,
+        forum: "Announcements",
         id: 2,
         isPrivate: false,
         postText: "This is the second post description.",
-        subject: 1,
+        subject: "General",
         title: "This is the second post.",
+        fullName: "Test1 User1"
       },
       {
-        creator: 2,
+        creatorId: 2,
         date: getCurrentDate(),
-        forum: 2,
+        forum: "Technology",
         id: 3,
         isPrivate: false,
         postText: "This is the third post description.",
-        subject: 2,
+        subject: "Ideas",
         title: "This is the third post.",
+        fullName: "Test2 User2"
       },
     ]);
   });
@@ -124,35 +127,40 @@ describe("findAllUser", () => {
     const res = await Post.findAllUser(2);
     expect(res).toEqual([
       {
-        creator: 2,
+        fullName: "Test 2 User2",
+        creatorId: 2,
         date: getCurrentDate(),
-        forum: 2,
+        forum: "Technology",
         id: 3,
         isPrivate: false,
         postText: "This is the third post description.",
-        subject: 2,
+        subject: "Ideas",
         title: "This is the third post.",
       },
       {
-        creator: 2,
+        fullName: "Test 2 User2",
+        creatorId: 2,
         date: getCurrentDate(),
-        forum: 2,
+        forum: "Technology",
         id: 4,
         isPrivate: true,
         postText: "This is the fourth post description.",
-        subject: 2,
+        subject: "Ideas",
         title: "This is the fourth post.",
       },
-      {
-        creator: 2,
+       {
+        fullName: "Test 2 User2",
+        creatorId: 2,
         date: getCurrentDate(),
-        forum: 3,
+        forum: "Marketplaces",
         id: 5,
         isPrivate: true,
         postText: "This is the fifth post description.",
-        subject: 3,
+        subject: "Help",
         title: "This is the fifth post.",
       },
+      
+      
     ]);
   });
   test("should find all admin user related posts", async () => {

@@ -354,11 +354,11 @@ describe("removeRefreshToken", () => {
 describe("getFullName", () => {
   test("should return a user's full name", async () => {
     const res = await User.getFullName(2);
-    expect(res).toEqual({ fullName: "Test2 User2" });
+    expect(res).toEqual("Test2 User2" );
   });
   test("should return an admin user's full name", async () => {
     const res = await User.getFullName(1);
-    expect(res).toEqual({ fullName: "Test1 User1" });
+    expect(res).toEqual("Test1 User1" );
   });
   test("should throw NotFoundError", async () => {
     try {

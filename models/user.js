@@ -297,7 +297,7 @@ class User {
 
   /** Given a user id, returns the full name of the user.
    *
-   * Returns => {fullName}
+   * Returns => "fullName"
    *
    * Throws NotFoundError if user not found
    */
@@ -316,7 +316,7 @@ class User {
      //if no user is found, throw error
      if (!user) throw new NotFoundError("No user found!");
 
-     return {fullName: `${user.firstName} ${user.lastName}`}
+     return `${user.firstName} ${user.lastName}`
    
   }
 }

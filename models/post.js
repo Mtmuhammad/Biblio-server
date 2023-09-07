@@ -3,6 +3,7 @@
 const db = require("../db");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 const { BadRequestError, NotFoundError } = require("../expressError");
+const {appendName} = require("../helpers/appendName")
 
 /** Related functions for a user post */
 
@@ -49,22 +50,26 @@ class Post {
 
   /** Finds all public posts.
    *
-   * Returns [{id, creator, date, title, postText, subject, forum, isPrivate}, {...}, {...}]
+   * Returns [{id, creatorId, fullName, date, title, postText, subject, forum, isPrivate}, {...}, {...}]
    */
 
   static async findAllPublic() {
     // fetch all public posts
     const result = await db.query(
       `
-    SELECT id, creator, to_char(date_created, 'MM-DD-YYYY') AS "date",
-    title, post_text AS "postText", subject, forum, is_private AS "isPrivate"
+    SELECT posts.id, posts.creator AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
+    posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate"
     FROM posts
-    WHERE is_private = $1
+    JOIN subjects
+    ON subjects.id = posts.subject
+    JOIN forums
+    ON forums.id = posts.forum
+    WHERE posts.is_private = $1
     `,
       [false]
     );
 
-    const posts = result.rows;
+    let posts = await appendName(result.rows)
 
     return posts;
   }
@@ -79,10 +84,14 @@ class Post {
   static async findAllUser(userId) {
     // fetch posts by user id
     const result = await db.query(
-      `SELECT id, creator, to_char(date_created, 'MM-DD-YYYY') AS "date",
-      title, post_text AS "postText", subject, forum, is_private AS "isPrivate"
+      `SELECT posts.id, posts.creator AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
+      posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate"
       FROM posts
-      WHERE creator = $1
+      JOIN subjects
+      ON subjects.id = posts.subject
+      JOIN forums
+      ON forums.id = posts.forum
+      WHERE posts.creator = $1
       `,
       [userId]
     );
