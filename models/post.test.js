@@ -92,7 +92,7 @@ describe("findAllPublic", () => {
         postText: "This is the first post description.",
         subject: "General",
         title: "This is the first post.",
-        fullName: "Test1 User1"
+        fullName: "Test1 User1",
       },
       {
         creatorId: 1,
@@ -103,7 +103,7 @@ describe("findAllPublic", () => {
         postText: "This is the second post description.",
         subject: "General",
         title: "This is the second post.",
-        fullName: "Test1 User1"
+        fullName: "Test1 User1",
       },
       {
         creatorId: 2,
@@ -114,7 +114,7 @@ describe("findAllPublic", () => {
         postText: "This is the third post description.",
         subject: "Ideas",
         title: "This is the third post.",
-        fullName: "Test2 User2"
+        fullName: "Test2 User2",
       },
     ]);
   });
@@ -127,7 +127,7 @@ describe("findAllUser", () => {
     const res = await Post.findAllUser(2);
     expect(res).toEqual([
       {
-        fullName: "Test 2 User2",
+        fullName: "Test2 User2",
         creatorId: 2,
         date: getCurrentDate(),
         forum: "Technology",
@@ -138,7 +138,7 @@ describe("findAllUser", () => {
         title: "This is the third post.",
       },
       {
-        fullName: "Test 2 User2",
+        fullName: "Test2 User2",
         creatorId: 2,
         date: getCurrentDate(),
         forum: "Technology",
@@ -148,8 +148,8 @@ describe("findAllUser", () => {
         subject: "Ideas",
         title: "This is the fourth post.",
       },
-       {
-        fullName: "Test 2 User2",
+      {
+        fullName: "Test2 User2",
         creatorId: 2,
         date: getCurrentDate(),
         forum: "Marketplaces",
@@ -159,41 +159,42 @@ describe("findAllUser", () => {
         subject: "Help",
         title: "This is the fifth post.",
       },
-      
-      
     ]);
   });
   test("should find all admin user related posts", async () => {
     const res = await Post.findAllUser(1);
     expect(res).toEqual([
       {
-        creator: 1,
+        fullName: "Test1 User1",
+        creatorId: 1,
         date: getCurrentDate(),
-        forum: 1,
+        forum: "Announcements",
         id: 1,
         isPrivate: false,
         postText: "This is the first post description.",
-        subject: 1,
+        subject: "General",
         title: "This is the first post.",
       },
       {
-        creator: 1,
+        fullName: "Test1 User1",
+        creatorId: 1,
         date: getCurrentDate(),
-        forum: 1,
+        forum: "Announcements",
         id: 2,
         isPrivate: false,
         postText: "This is the second post description.",
-        subject: 1,
+        subject: "General",
         title: "This is the second post.",
       },
       {
-        creator: 1,
+        fullName: "Test1 User1",
+        creatorId: 1,
         date: getCurrentDate(),
-        forum: 3,
+        forum: "Marketplaces",
         id: 6,
         isPrivate: true,
         postText: "This is the sixth post description.",
-        subject: 3,
+        subject: "Help",
         title: "This is the sixth post.",
       },
     ]);
@@ -213,27 +214,29 @@ describe("findOne", () => {
   test("should find a user post", async () => {
     const res = await Post.findOne(5);
     expect(res).toEqual({
-      creator: 2,
+      creatorId: 2,
       date: getCurrentDate(),
-      forum: 3,
+      forum: "Marketplaces",
       id: 5,
       isPrivate: true,
       postText: "This is the fifth post description.",
-      subject: 3,
+      subject: "Help",
       title: "This is the fifth post.",
+      fullName: "Test2 User2"
     });
   });
   test("should find an admin user post", async () => {
     const res = await Post.findOne(6);
     expect(res).toEqual({
-      creator: 1,
+      creatorId: 1,
       date: getCurrentDate(),
-      forum: 3,
+      forum: "Marketplaces",
       id: 6,
       isPrivate: true,
       postText: "This is the sixth post description.",
-      subject: 3,
+      subject: "Help",
       title: "This is the sixth post.",
+      fullName: "Test1 User1"
     });
   });
   test("should throw error if post not found", async () => {

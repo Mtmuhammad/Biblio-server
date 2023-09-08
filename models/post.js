@@ -69,14 +69,14 @@ class Post {
       [false]
     );
 
-    let posts = await appendName(result.rows)
+    const posts = await appendName(result.rows)
 
     return posts;
   }
 
   /** Given a userId, finds all posts that belong to that user.
    *
-   * Returns => [{id, creator, date, title, postText, subject, forum, isPrivate}, {...}, {...}]
+   * Returns => [{id, creatorId, fullName, date, title, postText, subject, forum, isPrivate}, {...}, {...}]
    *
    * Throws NotFoundError if user not found
    */
@@ -96,17 +96,19 @@ class Post {
       [userId]
     );
 
-    const posts = result.rows;
+    let posts = result.rows;
 
     if (posts.length === 0)
       throw new NotFoundError("Invalid data, user does not exist!");
+
+    posts = await appendName(posts)
 
     return posts;
   }
 
   /**Given a post id, finds the individual post.
    *
-   * Returns => {id, creator, date, title, postText, subject, forum, isPrivate}
+   * Returns => {id, creatorId, fullName, date, title, postText, subject, forum, isPrivate}
    *
    * Throws NotFoundError if no post found.
    */
@@ -114,19 +116,25 @@ class Post {
   static async findOne(id) {
     // fetch post by id in database
     const result = await db.query(
-      `SELECT id, creator, to_char(date_created, 'MM-DD-YYYY') AS "date",
-      title, post_text AS "postText", subject, forum, is_private AS "isPrivate"
+      `SELECT posts.id, posts.creator AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
+      posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate"
       FROM posts
-      WHERE id = $1`,
+      JOIN subjects
+      ON subjects.id = posts.subject
+      JOIN forums
+      ON forums.id = posts.forum
+      WHERE posts.id = $1`,
       [id]
     );
 
-    const post = result.rows[0];
+    let post = result.rows[0];
 
     // if not found, throw error
     if (!post) throw new NotFoundError("No post found!");
 
-    return post;
+    post = await appendName(result.rows)
+
+    return post[0];
   }
 
   /** Update post data with given "data"
