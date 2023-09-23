@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const db = require("../db");
 const { BCRYPT_WORK_FACTOR } = require("../config");
 const { createRefreshToken } = require("../helpers/tokens");
+const { getCurrentTime } = require("../helpers/getCurrentTime");
 
 async function commonBeforeAll() {
   // no inspection SqlWithoutWhere
@@ -11,6 +12,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM forums");
   await db.query("DELETE FROM subjects");
   await db.query("DELETE FROM posts");
+  await db.query("DELETE FROM comments");
 
   // alter id sequences for testing
   await db.query(`ALTER SEQUENCE users_id_seq restart with 1;`);
@@ -19,6 +21,7 @@ async function commonBeforeAll() {
   await db.query(`ALTER SEQUENCE forums_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE subjects_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE posts_id_seq restart with 1;`);
+  await db.query(`ALTER SEQUENCE comments_id_seq restart with 1;`);
 
   // insert users test data
   await db.query(
@@ -78,6 +81,19 @@ async function commonBeforeAll() {
   (2, 'This is the fourth post.', 'This is the fourth post description.', 2, 2, true),
   (2, 'This is the fifth post.', 'This is the fifth post description.', 3, 3, true),
   (1, 'This is the sixth post.', 'This is the sixth post description.', 3, 3, true)`);
+
+  //insert comment test data
+  let currentTime = getCurrentTime();
+  await db.query(`
+  INSERT INTO comments
+  (creator_id, text, post_id, time)
+  VALUES
+  (1, 'This is the first test comment.', 1, $1),
+  (2, 'This is the second test comment.', 1, $1),
+  (1, 'This is the third test comment.', 3, $1),
+  (2, 'This is the fourth test comment.', 4, $1),
+  (1, 'This is the fifth test comment.', 5, $1),
+  (2, 'This is the sixth test comment.', 6, $1)`, [currentTime]);
 }
 
 async function commonBeforeEach() {
