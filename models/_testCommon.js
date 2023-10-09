@@ -13,6 +13,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM subjects");
   await db.query("DELETE FROM posts");
   await db.query("DELETE FROM comments");
+  await db.query("DELETE FROM replies");
 
   // alter id sequences for testing
   await db.query(`ALTER SEQUENCE users_id_seq restart with 1;`);
@@ -22,6 +23,7 @@ async function commonBeforeAll() {
   await db.query(`ALTER SEQUENCE subjects_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE posts_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE comments_id_seq restart with 1;`);
+  await db.query(`ALTER SEQUENCE replies_id_seq restart with 1;`);
 
   // insert users test data
   await db.query(
@@ -84,7 +86,8 @@ async function commonBeforeAll() {
 
   //insert comment test data
   let currentTime = getCurrentTime();
-  await db.query(`
+  await db.query(
+    `
   INSERT INTO comments
   (creator_id, text, post_id, time)
   VALUES
@@ -93,7 +96,26 @@ async function commonBeforeAll() {
   (1, 'This is the third test comment.', 3, $1),
   (2, 'This is the fourth test comment.', 4, $1),
   (1, 'This is the fifth test comment.', 5, $1),
-  (2, 'This is the sixth test comment.', 6, $1)`, [currentTime]);
+  (2, 'This is the sixth test comment.', 6, $1)`,
+    [currentTime]
+  );
+
+  //insert reply test data
+  await db.query(
+    `
+  INSERT INTO replies
+  (creator_id, text, comment_id, time)
+  VALUES
+  (1, 'This is the first test reply.', 1, $1),
+  (1, 'This is the second test reply.', 1, $1),
+  (2, 'This is the third test reply.', 2, $1),
+  (2, 'This is the fourth test reply.', 2, $1),
+  (1, 'This is the fifth test reply.', 3, $1),
+  (1, 'This is the sixth test reply.', 3, $1),
+  (2, 'This is the seventh test reply.', 4, $1),
+  (2, 'This is the eighth test reply.', 4, $1)`,
+    [currentTime]
+  );
 }
 
 async function commonBeforeEach() {

@@ -14,6 +14,7 @@ class Comment {
    * Returns => {id, creatorId, text, postId, date, time, fullName}
    *
    * Throws NotFoundError if creator does not exist
+   * Throws NotFoundError if post does not exist
    */
 
   static async create({ creatorId, text, postId }) {
