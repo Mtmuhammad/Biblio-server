@@ -160,7 +160,7 @@ class Reply {
    *
    * Returns => {id, creatorId, text, commentId, time, date, fullName}
    *
-   * Throws NotFoundError if no REPLY found.
+   * Throws NotFoundError if no reply found.
    * Throws BadRequestError if no data is submitted.
    */
 
@@ -213,7 +213,7 @@ class Reply {
 
     const reply = result.rows[0];
     // if no reply found, throw error
-    if (!reply) throw new NotFoundError("No reply fond!");
+    if (!reply) throw new NotFoundError("No reply found!");
   }
 }
 

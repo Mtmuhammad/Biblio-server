@@ -14,6 +14,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM posts");
   await db.query("DELETE FROM comments");
   await db.query("DELETE FROM replies");
+  await db.query("DELETE FROM likes");
 
   // alter id sequences for testing
   await db.query(`ALTER SEQUENCE users_id_seq restart with 1;`);
@@ -24,6 +25,7 @@ async function commonBeforeAll() {
   await db.query(`ALTER SEQUENCE posts_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE comments_id_seq restart with 1;`);
   await db.query(`ALTER SEQUENCE replies_id_seq restart with 1;`);
+  await db.query(`ALTER SEQUENCE likes_id_seq restart with 1;`);
 
   // insert users test data
   await db.query(
@@ -114,6 +116,22 @@ async function commonBeforeAll() {
   (1, 'This is the sixth test reply.', 3, $1),
   (2, 'This is the seventh test reply.', 4, $1),
   (2, 'This is the eighth test reply.', 4, $1)`,
+    [currentTime]
+  );
+
+  // insert like test data
+  await db.query(
+    `
+  INSERT INTO likes
+  (post_id, creator_id, time)
+  VALUES
+  (1, 1, $1),
+  (1, 2, $1),
+  (2, 1, $1),
+  (2, 2, $1),
+  (3, 1, $1),
+  (4, 2, $1),
+  (5, 2, $1)`,
     [currentTime]
   );
 }
