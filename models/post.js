@@ -3,23 +3,24 @@
 const db = require("../db");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const {appendName} = require("../helpers/appendName")
+const {appendName} = require("../helpers/appendName");
+const { getCurrentTime } = require("../helpers/getCurrentTime");
 
 /** Related functions for a user post */
 
 class Post {
   /** create a new user post.
    *
-   * Returns => {id, creator, date, title, postText, subject, forum, isPrivate}
+   * Returns => {id, creatorId, date, title, postText, subject, forum, isPrivate, time, fullName}
    *
    * Throws BadRequestError if duplicate title and creator.
    * Throws NotFoundError if creator does not exist.
    */
 
-  static async create({ creator, title, postText, subject, forum }) {
+  static async create({ creatorId, title, postText, subject, forum }) {
     // Check if user exists, if not throw error
     const user = await db.query(`SELECT id FROM users WHERE id = $1`, [
-      creator,
+      creatorId,
     ]);
     if (!user.rows[0])
       throw new NotFoundError("Invalid data, user does not exist!");
@@ -27,8 +28,8 @@ class Post {
     /* Check if a post exist with the same title and creator.
       If the post exists, throw error. */
     const duplicateCheck = await db.query(
-      `SELECT * FROM posts WHERE creator=$1 AND title=$2`,
-      [creator, title]
+      `SELECT * FROM posts WHERE creator_id=$1 AND title=$2`,
+      [creatorId, title]
     );
 
     if (duplicateCheck.rows[0])
@@ -37,28 +38,30 @@ class Post {
     // create post
     const result = await db.query(
       `
-   INSERT INTO posts (creator, title, post_text, subject, forum)
-   VALUES ($1,$2, $3, $4, $5)
-   RETURNING id, creator, to_char(date_created, 'MM-DD-YYYY') AS "date",
-   title, post_text AS "postText", subject, forum, is_private AS "isPrivate"`,
-      [creator, title, postText, subject, forum]
+   INSERT INTO posts (creator_id, title, post_text, subject, forum, time)
+   VALUES ($1,$2, $3, $4, $5, $6)
+   RETURNING id, creator_id AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
+   title, post_text AS "postText", subject, forum, is_private AS "isPrivate", time`,
+      [creatorId, title, postText, subject, forum, getCurrentTime()]
     );
-    const post = result.rows[0];
 
-    return post;
+    // append user full name
+    let post = await appendName(result.rows)
+
+    return post[0];
   }
 
   /** Finds all public posts.
    *
-   * Returns [{id, creatorId, fullName, date, title, postText, subject, forum, isPrivate}, {...}, {...}]
+   * Returns [{id, creatorId, fullName, date, title, postText, subject, forum, isPrivate, time}, {...}, {...}]
    */
 
   static async findAllPublic() {
     // fetch all public posts
     const result = await db.query(
       `
-    SELECT posts.id, posts.creator AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
-    posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate"
+    SELECT posts.id, posts.creator_id AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
+    posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate", posts.time
     FROM posts
     JOIN subjects
     ON subjects.id = posts.subject
@@ -76,7 +79,7 @@ class Post {
 
   /** Given a userId, finds all posts that belong to that user.
    *
-   * Returns => [{id, creatorId, fullName, date, title, postText, subject, forum, isPrivate}, {...}, {...}]
+   * Returns => [{id, creatorId, fullName, date, title, postText, subject, forum, isPrivate, time}, {...}, {...}]
    *
    * Throws NotFoundError if user not found
    */
@@ -84,14 +87,14 @@ class Post {
   static async findAllUser(userId) {
     // fetch posts by user id
     const result = await db.query(
-      `SELECT posts.id, posts.creator AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
-      posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate"
+      `SELECT posts.id, posts.creator_id AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
+      posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate", posts.time
       FROM posts
       JOIN subjects
       ON subjects.id = posts.subject
       JOIN forums
       ON forums.id = posts.forum
-      WHERE posts.creator = $1
+      WHERE posts.creator_id = $1
       `,
       [userId]
     );
@@ -108,7 +111,7 @@ class Post {
 
   /**Given a post id, finds the individual post.
    *
-   * Returns => {id, creatorId, fullName, date, title, postText, subject, forum, isPrivate}
+   * Returns => {id, creatorId, fullName, date, title, postText, subject, forum, isPrivate, time}
    *
    * Throws NotFoundError if no post found.
    */
@@ -116,8 +119,8 @@ class Post {
   static async findOne(id) {
     // fetch post by id in database
     const result = await db.query(
-      `SELECT posts.id, posts.creator AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
-      posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate"
+      `SELECT posts.id, posts.creator_id AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
+      posts.title, post_text AS "postText", subjects.name AS "subject", forums.title AS "forum", is_private AS "isPrivate", posts.time
       FROM posts
       JOIN subjects
       ON subjects.id = posts.subject
@@ -147,7 +150,7 @@ class Post {
    * Data can include:
    * {title, postText, subject, forum, isPrivate}
    *
-   * Returns => {id, creator, date, title, postText, subject, forum, isPrivate}
+   * Returns => {id, creatorId, date, title, postText, subject, forum, isPrivate, time}
    *
    * Throws NotFoundError if no post found.
    * Throws BadRequestError if no data submitted.
@@ -170,8 +173,8 @@ class Post {
     UPDATE posts
     SET ${setCols}
     WHERE id = ${numberVarIdx}
-    RETURNING id, creator, to_char(date_created, 'MM-DD-YYYY') AS "date",
-    title, post_text AS "postText", subject, forum, is_private AS "isPrivate"`;
+    RETURNING id, creator_id AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
+    title, post_text AS "postText", subject, forum, is_private AS "isPrivate", time`;
 
     const result = await db.query(querySql, [...values, id]);
     const post = result.rows[0];

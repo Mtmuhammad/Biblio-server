@@ -4,6 +4,7 @@ const { NotFoundError, BadRequestError } = require("../expressError");
 const db = require("../db");
 const Post = require("./post");
 const { getCurrentDate } = require("../helpers/getCurrentDate");
+const { getCurrentTime } = require("../helpers/getCurrentTime");
 
 const {
   commonAfterAll,
@@ -21,14 +22,14 @@ afterAll(commonAfterAll);
 
 describe("create", () => {
   const newPost1 = {
-    creator: 1,
+    creatorId: 1,
     title: "First Test Post",
     postText: "This is the first test post text.",
     subject: 1,
     forum: 1,
   };
   const newPost2 = {
-    creator: 2,
+    creatorId: 2,
     title: "Second Test Post",
     postText: "This is the second test post text.",
     subject: 2,
@@ -41,6 +42,8 @@ describe("create", () => {
       isPrivate: false,
       date: getCurrentDate(),
       id: 7,
+      time: getCurrentTime(),
+      fullName: "Test2 User2"
     });
   });
   test("should create a post for admin user", async () => {
@@ -50,12 +53,14 @@ describe("create", () => {
       isPrivate: false,
       date: getCurrentDate(),
       id: 8,
+      time: getCurrentTime(),
+      fullName: "Test1 User1"
     });
   });
   test("should fail if user does not exist", async () => {
     try {
       await Post.create({
-        creator: 8,
+        creatorId: 8,
         title: "First Test Post",
         postText: "This is the first test post text.",
         subject: 1,
@@ -93,6 +98,7 @@ describe("findAllPublic", () => {
         subject: "General",
         title: "This is the first post.",
         fullName: "Test1 User1",
+        time: getCurrentTime(),
       },
       {
         creatorId: 1,
@@ -104,6 +110,7 @@ describe("findAllPublic", () => {
         subject: "General",
         title: "This is the second post.",
         fullName: "Test1 User1",
+        time: getCurrentTime(),
       },
       {
         creatorId: 2,
@@ -115,6 +122,7 @@ describe("findAllPublic", () => {
         subject: "Ideas",
         title: "This is the third post.",
         fullName: "Test2 User2",
+        time: getCurrentTime(),
       },
     ]);
   });
@@ -136,6 +144,7 @@ describe("findAllUser", () => {
         postText: "This is the third post description.",
         subject: "Ideas",
         title: "This is the third post.",
+        time: getCurrentTime(),
       },
       {
         fullName: "Test2 User2",
@@ -147,6 +156,7 @@ describe("findAllUser", () => {
         postText: "This is the fourth post description.",
         subject: "Ideas",
         title: "This is the fourth post.",
+        time: getCurrentTime(),
       },
       {
         fullName: "Test2 User2",
@@ -158,6 +168,7 @@ describe("findAllUser", () => {
         postText: "This is the fifth post description.",
         subject: "Help",
         title: "This is the fifth post.",
+        time: getCurrentTime(),
       },
     ]);
   });
@@ -174,6 +185,7 @@ describe("findAllUser", () => {
         postText: "This is the first post description.",
         subject: "General",
         title: "This is the first post.",
+        time: getCurrentTime(),
       },
       {
         fullName: "Test1 User1",
@@ -185,6 +197,7 @@ describe("findAllUser", () => {
         postText: "This is the second post description.",
         subject: "General",
         title: "This is the second post.",
+        time: getCurrentTime(),
       },
       {
         fullName: "Test1 User1",
@@ -196,6 +209,7 @@ describe("findAllUser", () => {
         postText: "This is the sixth post description.",
         subject: "Help",
         title: "This is the sixth post.",
+        time: getCurrentTime(),
       },
     ]);
   });
@@ -222,7 +236,8 @@ describe("findOne", () => {
       postText: "This is the fifth post description.",
       subject: "Help",
       title: "This is the fifth post.",
-      fullName: "Test2 User2"
+      fullName: "Test2 User2",
+      time: getCurrentTime(),
     });
   });
   test("should find an admin user post", async () => {
@@ -236,7 +251,8 @@ describe("findOne", () => {
       postText: "This is the sixth post description.",
       subject: "Help",
       title: "This is the sixth post.",
-      fullName: "Test1 User1"
+      fullName: "Test1 User1",
+      time: getCurrentTime(),
     });
   });
   test("should throw error if post not found", async () => {
@@ -254,7 +270,7 @@ describe("update", () => {
   test("should update a user post field", async () => {
     const res = await Post.update(5, { title: "This is a test." });
     expect(res).toEqual({
-      creator: 2,
+      creatorId: 2,
       date: getCurrentDate(),
       forum: 3,
       id: 5,
@@ -262,6 +278,7 @@ describe("update", () => {
       postText: "This is the fifth post description.",
       subject: 3,
       title: "This is a test.",
+      time: getCurrentTime(),
     });
   });
   test("should update multiple user post fields", async () => {
@@ -271,7 +288,7 @@ describe("update", () => {
       postText: "This is a test post field.",
     });
     expect(res).toEqual({
-      creator: 2,
+      creatorId: 2,
       date: getCurrentDate(),
       forum: 3,
       id: 5,
@@ -279,12 +296,13 @@ describe("update", () => {
       postText: "This is a test post field.",
       subject: 3,
       title: "This is a test.",
+      time: getCurrentTime(),
     });
   });
   test("should update an admin user post field", async () => {
     const res = await Post.update(6, { title: "This is a test." });
     expect(res).toEqual({
-      creator: 1,
+      creatorId: 1,
       date: getCurrentDate(),
       forum: 3,
       id: 6,
@@ -292,6 +310,7 @@ describe("update", () => {
       postText: "This is the sixth post description.",
       subject: 3,
       title: "This is a test.",
+      time: getCurrentTime(),
     });
   });
   test("should update multiple admin user post fields", async () => {
@@ -300,7 +319,7 @@ describe("update", () => {
       isPrivate: false,
     });
     expect(res).toEqual({
-      creator: 1,
+      creatorId: 1,
       date: getCurrentDate(),
       forum: 3,
       id: 6,
@@ -308,6 +327,7 @@ describe("update", () => {
       postText: "This is the sixth post description.",
       subject: 3,
       title: "This is a test.",
+      time: getCurrentTime(),
     });
   });
   test("should throw error if post not found", async () => {

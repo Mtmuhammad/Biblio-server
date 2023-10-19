@@ -74,20 +74,21 @@ async function commonBeforeAll() {
   VALUES
   ('General', 1), ('Ideas', 2), ('Help', 1)`);
 
+  let currentTime = getCurrentTime();
   // insert post test data
   await db.query(`
   INSERT INTO posts
-  (creator, title, post_text, subject, forum, is_private)
+  (creator_id, title, post_text, subject, forum, is_private,  time)
   VALUES
-  (1, 'This is the first post.', 'This is the first post description.', 1, 1, false), 
-  (1, 'This is the second post.', 'This is the second post description.', 1, 1, false),
-  (2, 'This is the third post.', 'This is the third post description.', 2, 2, false),
-  (2, 'This is the fourth post.', 'This is the fourth post description.', 2, 2, true),
-  (2, 'This is the fifth post.', 'This is the fifth post description.', 3, 3, true),
-  (1, 'This is the sixth post.', 'This is the sixth post description.', 3, 3, true)`);
+  (1, 'This is the first post.', 'This is the first post description.', 1, 1, false, $1), 
+  (1, 'This is the second post.', 'This is the second post description.', 1, 1, false, $1),
+  (2, 'This is the third post.', 'This is the third post description.', 2, 2, false, $1),
+  (2, 'This is the fourth post.', 'This is the fourth post description.', 2, 2, true, $1),
+  (2, 'This is the fifth post.', 'This is the fifth post description.', 3, 3, true, $1),
+  (1, 'This is the sixth post.', 'This is the sixth post description.', 3, 3, true, $1)`, [currentTime]);
 
   //insert comment test data
-  let currentTime = getCurrentTime();
+  
   await db.query(
     `
   INSERT INTO comments
