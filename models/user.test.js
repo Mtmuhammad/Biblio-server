@@ -13,8 +13,8 @@ const {
   commonAfterEach,
   commonBeforeEach,
   commonBeforeAll,
-  u1refreshToken,
-  u2refreshToken,
+  u1Token,
+  u2Token,
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -148,8 +148,8 @@ describe("findAll", () => {
 describe("get", () => {
   test("should find a user", async () => {
     const user = await User.findOne(2);
-
     expect(user).toEqual({
+      id: 2,
       email: "test2@yahoo.com",
       firstName: "Test2",
       lastName: "User2",
@@ -158,8 +158,8 @@ describe("get", () => {
   });
   test("should find an admin user", async () => {
     const user = await User.findOne(1);
-
     expect(user).toEqual({
+      id: 1,
       email: "test1@yahoo.com",
       firstName: "Test1",
       lastName: "User1",
@@ -269,20 +269,20 @@ describe("remove", () => {
 /*******save refresh token  *******/
 describe("saveRefreshToken", () => {
   test("should save user refresh token", async () => {
-    const { refreshToken } = await User.saveRefreshToken(2, u2refreshToken);
+    const { refreshToken } = await User.saveRefreshToken(2, u2Token);
     const res = await db.query(`SELECT token FROM users WHERE id = 2`);
     expect(res.rows.length).toEqual(1);
     expect(res.rows[0].token).toEqual(refreshToken);
   });
   test("should save admin user refresh token", async () => {
-    const { refreshToken } = await User.saveRefreshToken(1, u1refreshToken);
+    const { refreshToken } = await User.saveRefreshToken(1, u1Token);
     const res = await db.query(`SELECT token FROM users WHERE id = 1`);
     expect(res.rows.length).toEqual(1);
     expect(res.rows[0].token).toEqual(refreshToken);
   });
   test("should throw not found if user does not exist", async () => {
     try {
-      await User.saveRefreshToken(4, u1refreshToken);
+      await User.saveRefreshToken(4, u1Token);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -294,8 +294,8 @@ describe("saveRefreshToken", () => {
 
 describe("findToken", () => {
   test("should find and return user given a refresh token", async () => {
-    await User.saveRefreshToken(2, u2refreshToken);
-    const foundUser = await User.findToken(u2refreshToken);
+    await User.saveRefreshToken(2, u2Token);
+    const foundUser = await User.findToken(u2Token);
     expect(foundUser).toEqual({
       email: "test2@yahoo.com",
       firstName: "Test2",
@@ -305,8 +305,8 @@ describe("findToken", () => {
     });
   });
   test("should find and return admin user given a refresh token", async () => {
-    await User.saveRefreshToken(1, u1refreshToken);
-    const foundUser = await User.findToken(u1refreshToken);
+    await User.saveRefreshToken(1, u1Token);
+    const foundUser = await User.findToken(u1Token);
     expect(foundUser).toEqual({
       email: "test1@yahoo.com",
       firstName: "Test1",
@@ -317,7 +317,7 @@ describe("findToken", () => {
   });
   test("should throw not found if user not found", async () => {
     try {
-      await User.findToken(u1refreshToken);
+      await User.findToken(u1Token);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -329,13 +329,13 @@ describe("findToken", () => {
 
 describe("removeRefreshToken", () => {
   test("should remove user refresh token", async () => {
-    await User.saveRefreshToken(2, u2refreshToken);
+    await User.saveRefreshToken(2, u2Token);
     await User.removeRefreshToken(2);
     const res = await db.query(`SELECT token FROM users WHERE id = 2`);
     expect(res.rows[0]).toEqual({ token: null });
   });
   test("should remove admin user refresh token", async () => {
-    await User.saveRefreshToken(1, u1refreshToken);
+    await User.saveRefreshToken(1, u1Token);
     await User.removeRefreshToken(1);
     const res = await db.query(`SELECT token FROM users WHERE id = 1`);
     expect(res.rows[0]).toEqual({ token: null });
@@ -354,11 +354,11 @@ describe("removeRefreshToken", () => {
 describe("getFullName", () => {
   test("should return a user's full name", async () => {
     const res = await User.getFullName(2);
-    expect(res).toEqual("Test2 User2" );
+    expect(res).toEqual("Test2 User2");
   });
   test("should return an admin user's full name", async () => {
     const res = await User.getFullName(1);
-    expect(res).toEqual("Test1 User1" );
+    expect(res).toEqual("Test1 User1");
   });
   test("should throw NotFoundError", async () => {
     try {

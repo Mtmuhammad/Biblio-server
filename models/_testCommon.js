@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../db");
 const { BCRYPT_WORK_FACTOR } = require("../config");
-const { createRefreshToken } = require("../helpers/tokens");
+const { createToken } = require("../helpers/tokens");
 const { getCurrentTime } = require("../helpers/getCurrentTime");
 
 async function commonBeforeAll() {
@@ -149,14 +149,19 @@ async function commonAfterAll() {
   await db.end();
 }
 
-const u1refreshToken = createRefreshToken({
+const u1Token = createToken({
   id: 1,
   email: "new1@yahoo.com",
   isAdmin: true,
 });
-const u2refreshToken = createRefreshToken({
-  id: 1,
+const u2Token = createToken({
+  id: 2,
   email: "new2@yahoo.com",
+  isAdmin: false,
+});
+const u3Token = createToken({
+  id: 5,
+  email: "new3@yahoo.com",
   isAdmin: false,
 });
 
@@ -165,6 +170,7 @@ module.exports = {
   commonAfterEach,
   commonBeforeAll,
   commonBeforeEach,
-  u1refreshToken,
-  u2refreshToken,
+  u1Token,
+  u2Token,
+  u3Token,
 };

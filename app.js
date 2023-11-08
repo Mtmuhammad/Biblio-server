@@ -9,6 +9,8 @@ const { NotFoundError } = require("./expressError");
 
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const booksRoutes = require("./routes/books");
+const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
 
@@ -26,6 +28,11 @@ app.use(express.urlencoded({ extended: false }));
 
 //middleware for cookies
 app.use(cookieParser());
+
+// custom middleware to authenticate JSON Web Tokens
+app.use(authenticateJWT)
+
+app.use("/books", booksRoutes)
 
 /** Handle 404 errors -- this matches everything */
 app.use((req, res, next) => {

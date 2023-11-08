@@ -123,6 +123,7 @@ class User {
     const result = await db.query(
       `
     SELECT
+    id,
       first_name as "firstName",
       last_name AS "lastName",
       email,

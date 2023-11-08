@@ -7,7 +7,12 @@ const {
   ensureLoggedIn,
   ensureIsAdmin,
   ensureCorrectUserOrAdmin,
+  checkUser,
 } = require("./auth");
+const User = require("../models/user");
+const Book = require("../models/book");
+
+const { commonAfterAll } = require("../models/_testCommon");
 require("dotenv").config();
 
 const testJWT = jwt.sign(
@@ -15,6 +20,8 @@ const testJWT = jwt.sign(
   process.env.ACCESS_TOKEN_SECRET
 );
 const badJWT = jwt.sign({ email: "test@example.com", isAdmin: false }, "wrong");
+
+afterAll(commonAfterAll);
 
 describe("authenticateJWT", () => {
   test("should work via header", () => {
@@ -139,5 +146,30 @@ describe("ensureCorrectUserOrAdmin", () => {
       expect(err instanceof UnauthorizedError).toBeTruthy();
     };
     ensureCorrectUserOrAdmin(req, res, next);
+  });
+});
+
+describe("checkUser", () => {
+  test("should work for user", async () => {
+    const currUser2 = await User.findOne(2);
+    const found2 = await Book.findOne(3);
+    const res = checkUser(found2, currUser2);
+    expect(res).toEqual(undefined);
+  });
+  test("should work for admin user", async () => {
+    const currUser1 = await User.findOne(1);
+    const found1 = await Book.findOne(1);
+    const res = checkUser(found1, currUser1);
+    expect(res).toEqual(undefined);
+  });
+  test("should throw ForbiddenError for wrong user or not admin", async () => {
+    try {
+      const currUser2 = await User.findOne(2);
+      const found1 = await Book.findOne(1);
+      checkUser(found1, currUser2);
+      fail();
+    } catch (err) {
+      expect(err instanceof ForbiddenError).toBeTruthy();
+    }
   });
 });

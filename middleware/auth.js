@@ -66,20 +66,38 @@ function ensureIsAdmin(req, res, next) {
  */
 
 function ensureCorrectUserOrAdmin(req, res, next) {
-   try {
-     const user = res.locals.user;
-     if (!(user && (user.isAdmin || user.id === +req.params.id))) {
-       throw new UnauthorizedError();
-     }
-     return next();
-   } catch (err) {
-     return next(err);
-   }
- }
+  try {
+    const user = res.locals.user;
+    if (!(user && (user.isAdmin || user.id === +req.params.id))) {
+      throw new UnauthorizedError();
+    }
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+}
+
+/** Function to check if logged in user is the correct user to modify or
+ * view certain data.
+ *
+ * If not, raises ForbiddenError
+ *
+ * Returns undefined
+ */
+
+function checkUser(found, currUser) {
+  if (found) {
+    if (currUser.isAdmin !== true && found.userId !== currUser.id) {
+      throw new ForbiddenError();
+    }
+  }
+  return undefined;
+}
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
   ensureIsAdmin,
-  ensureCorrectUserOrAdmin
+  ensureCorrectUserOrAdmin,
+  checkUser,
 };
