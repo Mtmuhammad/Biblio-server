@@ -3,13 +3,14 @@
 const db = require("../db");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 const { BadRequestError, NotFoundError } = require("../expressError");
+const { appendName } = require("../helpers/appendName");
 
 /** Related functions for a user collection */
 
 class Collection {
   /** create a new collection to store books
    *
-   * Returns => {id, title, owner, date, isPrivate}
+   * Returns => {id, title, creatorId, date, isPrivate, fullName}
    *
    * Throws BadRequestError if duplicate title and owner.
    * Throws NotFoundError if owner does not exist.
@@ -36,37 +37,42 @@ class Collection {
     // create collection
     const result = await db.query(
       `
-   INSERT INTO collections (title, owner, is_private)
+   INSERT INTO collections (title, creator_id, is_private)
    VALUES ($1,$2, $3)
-   RETURNING id, title, owner, to_char(date_created, 'MM-DD-YYYY') AS "date",
+   RETURNING id, title, creator_id AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
    is_private AS "isPrivate"`,
       [title, userId, isPrivate]
     );
-    const collection = result.rows[0];
+    let collection = result.rows;
 
-    return collection;
+    collection = await appendName(collection);
+
+    return collection[0];
   }
 
   /** Finds all public collections
    *
-   * Returns => [{id, title, owner, date}, {...}, {...}]
+   * Returns => [{id, title, creatorId, date, fullName}, {...}, {...}]
    */
 
   static async findAllPublic() {
     const result = await db.query(
       `
-    SELECT id, title, owner, to_char(date_created, 'MM-DD-YYYY') AS "date"
+    SELECT id, title, creator_id AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date"
     FROM collections
     WHERE is_private=$1`,
       [false]
     );
 
-    return result.rows;
+    let collections = result.rows;
+
+    collections = await appendName(collections);
+    return collections;
   }
 
   /**Given a userId, finds all collections owned by that user
    *
-   * Returns => [{id, title, owner, date, isPrivate}, {...}, {...}]
+   * Returns => [{id, title, creatorId, date, isPrivate, fullName}, {...}, {...}]
    *
    * Throws NotFoundError if user not found
    */
@@ -75,25 +81,27 @@ class Collection {
     // fetch collections by user id
     const result = await db.query(
       `SELECT
-    id, title, owner, 
+    id, title, creator_id AS "creatorId", 
     to_char(date_created, 'MM-DD-YYYY') AS "date", 
     is_private AS "isPrivate"
     FROM collections
-    WHERE owner =$1`,
+    WHERE creator_id =$1`,
       [userId]
     );
 
-    const collections = result.rows;
+    let collections = result.rows;
 
     if (collections.length === 0)
       throw new NotFoundError("Invalid data, user does not exist!");
+
+    collections = await appendName(collections)
 
     return collections;
   }
 
   /** Given a collection id, finds individual collection
    *
-   * Returns => {id, title, owner, date, isPrivate}
+   * Returns => {id, title, creatorId, date, isPrivate, fullName}
    *
    * Throws NotFoundError if no collection found
    */
@@ -102,7 +110,7 @@ class Collection {
     // fetch collection by id in database
     const result = await db.query(
       `
-    SELECT id, title, owner,
+    SELECT id, title, creator_id AS "creatorId",
     to_char(date_created, 'MM-DD-YYYY') AS "date", 
     is_private AS "isPrivate" 
     FROM collections
@@ -110,12 +118,14 @@ class Collection {
       [id]
     );
 
-    const collection = result.rows[0];
+    let collection = result.rows;
 
     // if not found, throw error
-    if (!collection) throw new NotFoundError(`No collection found!`);
+    if (!collection[0]) throw new NotFoundError(`No collection found!`);
 
-    return collection;
+    collection = await appendName(collection);
+
+    return collection[0];
   }
 
   /** Update collection data with given "data"
@@ -128,7 +138,7 @@ class Collection {
    * Data can include:
    * { title, isPrivate }
    *
-   * Returns => {id, title, owner, date, isPrivate}
+   * Returns => {id, title, creatorId, date, isPrivate, fullName}
    *
    * Throws NotFoundError if no collection found.
    * Throws BadRequestError if no data submitted.
@@ -137,7 +147,7 @@ class Collection {
   static async update(id, data) {
     //if no data, throw an error
     if (!data) throw new BadRequestError(`No data included!`);
-    
+
     // set column names to match database and change data entry to prevent sql injection
     const { setCols, values } = sqlForPartialUpdate(data, {
       isPrivate: "is_private",
@@ -150,18 +160,20 @@ class Collection {
     UPDATE collections
     SET ${setCols}
     WHERE id = ${numberVarIdx}
-    RETURNING id, title, owner,
+    RETURNING id, title, creator_id AS "creatorId",
     to_char(date_created, 'MM-DD-YYYY') AS "date", 
     is_private AS "isPrivate"
     `;
 
     const result = await db.query(querySql, [...values, id]);
-    const collection = result.rows[0];
+    let collection = result.rows;
 
     // if no collection found, throw error
-    if (!collection) throw new NotFoundError(`No collection found!`);
+    if (!collection[0]) throw new NotFoundError(`No collection found!`);
 
-    return collection;
+    collection = await appendName(collection)
+
+    return collection[0];
   }
 
   /** Given a collection id, deletes the collection

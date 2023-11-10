@@ -38,9 +38,10 @@ describe("create", () => {
     expect(res).toEqual({
       id: 4,
       title: "Test2 Collection",
-      owner: 2,
+      creatorId: 2,
       date: getCurrentDate(),
       isPrivate: false,
+      fullName: "Test2 User2"
     });
   });
   test("should create an admin user collection", async () => {
@@ -48,9 +49,10 @@ describe("create", () => {
     expect(res).toEqual({
       id: 5,
       title: "Test1 Collection",
-      owner: 1,
+      creatorId: 1,
       date: getCurrentDate(),
       isPrivate: true,
+      fullName: "Test1 User1"
     });
   });
   test("should fail if user does not exist", async () => {
@@ -88,15 +90,17 @@ describe("findAllPublic", () => {
     expect(res).toEqual([
       {
         id: 2,
-        owner: 2,
+        creatorId: 2,
         title: "Second Collection",
         date: getCurrentDate(),
+        fullName: "Test2 User2"
       },
       {
         id: 3,
-        owner: 1,
+        creatorId: 1,
         title: "Third Collection",
         date: getCurrentDate(),
+        fullName: "Test1 User1"
       },
     ]);
   });
@@ -111,9 +115,10 @@ describe("findAllUser", () => {
       {
         id: 2,
         title: "Second Collection",
-        owner: 2,
+        creatorId: 2,
         date: getCurrentDate(),
         isPrivate: false,
+        fullName: "Test2 User2"
       },
     ]);
   });
@@ -124,16 +129,18 @@ describe("findAllUser", () => {
       {
         id: 1,
         title: "First Collection",
-        owner: 1,
+        creatorId: 1,
         date: getCurrentDate(),
         isPrivate: true,
+        fullName: "Test1 User1"
       },
       {
         id: 3,
         title: "Third Collection",
-        owner: 1,
+        creatorId: 1,
         date: getCurrentDate(),
         isPrivate: false,
+        fullName: "Test1 User1"
       },
     ]);
   });
@@ -154,9 +161,10 @@ describe("findOne", () => {
     expect(res).toEqual({
       id: 2,
       title: "Second Collection",
-      owner: 2,
+      creatorId: 2,
       date: getCurrentDate(),
       isPrivate: false,
+      fullName: "Test2 User2"
     });
   });
   test("should find an admin user collection", async () => {
@@ -164,9 +172,10 @@ describe("findOne", () => {
     expect(res).toEqual({
       id: 1,
       title: "First Collection",
-      owner: 1,
+      creatorId: 1,
       date: getCurrentDate(),
       isPrivate: true,
+      fullName: "Test1 User1"
     });
   });
   test("should throw error if collection not found", async () => {
@@ -188,9 +197,10 @@ describe("update", () => {
     expect(res).toEqual({
       id: 2,
       title: "This is the second collection",
-      owner: 2,
+      creatorId: 2,
       date: getCurrentDate(),
       isPrivate: false,
+      fullName: "Test2 User2"
     });
   });
   test("should update multiple user collection fields", async () => {
@@ -201,9 +211,10 @@ describe("update", () => {
     expect(res).toEqual({
       id: 2,
       title: "This is the second collection",
-      owner: 2,
+      creatorId: 2,
       date: getCurrentDate(),
       isPrivate: true,
+      fullName: "Test2 User2"
     });
   });
   test("should update an admin user collection field", async () => {
@@ -213,9 +224,10 @@ describe("update", () => {
     expect(res).toEqual({
       id: 1,
       title: "This is the first collection",
-      owner: 1,
+      creatorId: 1,
       date: getCurrentDate(),
       isPrivate: true,
+      fullName: "Test1 User1"
     });
   });
   test("should update multiple user collection fields", async () => {
@@ -226,9 +238,10 @@ describe("update", () => {
     expect(res).toEqual({
       id: 1,
       title: "This is the first collection",
-      owner: 1,
+      creatorId: 1,
       date: getCurrentDate(),
       isPrivate: false,
+      fullName: "Test1 User1"
     });
   });
   test("should throw error if collection not found", async () => {

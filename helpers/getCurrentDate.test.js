@@ -18,9 +18,9 @@ describe("getCurrentDate", () => {
   test("should return new collection date", async () => {
     const result = await db.query(
       `
-      INSERT INTO collections (title, owner)
+      INSERT INTO collections (title, creator_id)
       VALUES ($1,$2)
-      RETURNING id, title, owner, to_char(date_created, 'MM-DD-YYYY') AS "date"`,
+      RETURNING id, title, creator_id, to_char(date_created, 'MM-DD-YYYY') AS "date"`,
       ["Time test collection", 1]
     );
     const collection = result.rows[0];
