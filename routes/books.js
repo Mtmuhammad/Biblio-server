@@ -117,6 +117,8 @@ router.patch("/:id", ensureLoggedIn, async (req, res, next) => {
 });
 
 /**DELETE "/:id" => {deleted: Book id "id"}
+ * 
+ * Deletes book.
  *
  * Authorization required: login and correct user or admin
  */

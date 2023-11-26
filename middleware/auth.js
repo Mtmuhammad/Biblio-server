@@ -86,8 +86,12 @@ function ensureCorrectUserOrAdmin(req, res, next) {
  */
 
 function checkUser(found, currUser) {
-  if (found) {
+  if (found.userId) {
     if (currUser.isAdmin !== true && found.userId !== currUser.id) {
+      throw new ForbiddenError();
+    }
+  } else if (found.creatorId) {
+    if (currUser.isAdmin !== true && found.creatorId !== currUser.id) {
       throw new ForbiddenError();
     }
   }

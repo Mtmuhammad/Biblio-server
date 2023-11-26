@@ -1,43 +1,28 @@
 {
-   "$schema": "https://json-schema.org/draft/2019-09/schema",
-   "$id": "http://example.com/example.json",
-   "type": "object",
-   "required": [
-       "user"
-   ],
-   "properties": {
-       "collectionId": {
-           "type": "integer"
-           
-       },
-       "userId": {
-           "type": "integer"
-           
-       },
-       "key": {
-           "type": "string"
-           
-       },
-       "author": {
-           "type": "string"
-       },
-       "title": {
-           "type": "string"
-       },
-       "description": {
-           "type": "string"
-       },
-       "year": {
-           "type": "integer"
-       }
-   },
-   "examples": [{
-       "collectionId": 2,
-       "userId": 2,
-       "key": "/works/123456",
-       "author": "James Baldwin",
-       "title": "Another Country",
-       "description": "Test Description 2",
-       "year": 1962
-   }]
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "required": [
+        "userId",
+        "title",
+        "isPrivate"
+    ],
+    "properties": {
+        "userId": {
+            "type": "integer"
+        },
+        "title": {
+            "type": "string"
+        },
+        "isPrivate": {
+            "type": "boolean"
+        },
+        "examples": [
+            {
+                "userId": 2,
+                "title": "Test2 Collection",
+                "isPrivate": false
+            }
+        ]
+    }
 }

@@ -2,7 +2,6 @@
 
 const request = require("supertest");
 
-const db = require("../db");
 const app = require("../app");
 const { getCurrentDate } = require("../helpers/getCurrentDate");
 
@@ -355,7 +354,7 @@ describe("PATCH /books/:id", () => {
       .send({ collectionId: "yes" });
     expect(res.statusCode).toBe(401);
   });
-  test("should throw ForbiddenError if admin or correct user", async () => {
+  test("should throw ForbiddenError if not admin or correct user", async () => {
     const res = await request(app)
       .patch("/books/1")
       .send({ collectionId: 1 })
