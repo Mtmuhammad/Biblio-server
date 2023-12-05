@@ -358,7 +358,7 @@ describe("PATCH /collections/:id", () => {
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toBe(403);
   });
-  test("should throw NotFoundError if book doesn't exist", async () => {
+  test("should throw NotFoundError if collection doesn't exist", async () => {
     const res = await request(app)
       .patch("/collections/8")
       .send({ isPrivate: true })
@@ -391,7 +391,7 @@ describe("DELETE /collections/:id", () => {
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toBe(403);
   });
-  test("should throw NotFoundError if book doesn't exist", async () => {
+  test("should throw NotFoundError if collection doesn't exist", async () => {
     const res = await request(app)
       .delete("/collections/8")
       .set("authorization", `Bearer ${u2Token}`);

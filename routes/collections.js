@@ -16,10 +16,7 @@ const collectionUpdateSchema = require("../schemas/collectionUpdate.json");
 
 const router = express.Router();
 
-/**
- * UPDATE A COLLECTION
- * DELETE A COLLECTION
- */
+
 
 /** POST "/" {collection} => {collection}
  *

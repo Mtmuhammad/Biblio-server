@@ -1,0 +1,28 @@
+{
+   "$schema": "https://json-schema.org/draft/2019-09/schema",
+   "$id": "http://example.com/example.json",
+   "type": "object",
+   "required": [
+      "creatorId",
+      "text",
+      "postId"
+   ],
+   "properties": {
+      "creatorId": {
+         "type": "integer"
+      },
+      "text": {
+         "type": "string"
+      },
+      "postId": {
+         "type": "integer"
+      }
+   },
+   "examples": [
+      {
+         "creatorId": 1,
+         "text": "A new comment for admin.",
+         "postId": 1
+      }
+   ]
+}
