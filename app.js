@@ -12,6 +12,7 @@ const cookieParser = require("cookie-parser");
 const bookRoutes = require("./routes/books");
 const collectionRoutes = require("./routes/collections");
 const commentRoutes = require("./routes/comments");
+const forumRoutes = require("./routes/forums");
 const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
@@ -37,6 +38,7 @@ app.use(authenticateJWT)
 app.use("/books", bookRoutes)
 app.use("/collections", collectionRoutes)
 app.use("/comments", commentRoutes)
+app.use("/forums", forumRoutes)
 
 /** Handle 404 errors -- this matches everything */
 app.use((req, res, next) => {
