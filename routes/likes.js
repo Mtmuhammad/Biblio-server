@@ -1,6 +1,6 @@
 "use strict";
 
-/**Routes for comments. */
+/**Routes for likes. */
 
 const jsonschema = require("jsonschema");
 const express = require("express");
@@ -10,21 +10,21 @@ const {
   ensureCorrectUserOrAdmin,
 } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
-const Comment = require("../models/comment");
-const commentNewSchema = require("../schemas/commentNew.json");
-const commentUpdateSchema = require("../schemas/commentUpdate.json");
+const Like = require("../models/like");
+const likeNewSchema = require("../schemas/likeNew.json");
+const likeUpdateSchema = require("../schemas/likeUpdate.json");
 
 const router = express.Router();
 
-/**POST "/" {comment} => {comment}
+/**POST "/" {like} => {like}
  *
- * Adds a new comment on a post. Any user can add a comment.
+ * Adds a new like on a post. Any user can add a new like.
  *
  * Data can include:
- * { creatorId, text, postId }
+ * {postId, creatorId}
  *
- * This returns newly added comment:
- * {comment: {id, creatorId, text, postId, date, time, fullName}}
+ * This returns newly added like:
+ * {like: {id, postId, creatorId, time, date, fullName}}
  *
  * Authorization required: login
  */
@@ -35,44 +35,60 @@ router.post("/", ensureLoggedIn, async (req, res, next) => {
     const currentUser = res.locals.user;
     const validator = jsonschema.validate(
       { ...req.body, creatorId: currentUser.id },
-      commentNewSchema
+      likeNewSchema
     );
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
-    // create new comment
-    const comment = await Comment.create({
+    // create new like
+    const like = await Like.create({
       ...req.body,
       creatorId: currentUser.id,
     });
 
-    return res.status(201).json({ comment });
+    return res.status(201).json({ like });
   } catch (err) {
     return next(err);
   }
 });
 
-/**GET "/" => {comments: [{comment}, {...}]}
+/**GET "/" => {likes: [{like}, {...}]}
  *
- * Returns all comments.
+ * Returns all likes.
  *
  * Authorization required: login
  */
 
 router.get("/", ensureLoggedIn, async (req, res, next) => {
   try {
-    const comments = await Comment.findAll();
-    return res.json({ comments });
+    const likes = await Like.findAll();
+    return res.json({ likes });
   } catch (err) {
     return next(err);
   }
 });
 
-/**GET /user/:id => {comments: [{comment}, {...}]}
+/**GET "/post/:id"  => {likes: [{like}, {...}]}
  *
- * Given a user id, returns all comments by that user.
+ * Given a post id, returns all likes on the post.
+ *
+ * Authorization required: login
+ */
+
+router.get("/post/:id", ensureLoggedIn, async (req, res, next) => {
+  try {
+    const likes = await Like.findLikesByPost(req.params.id);
+    return res.json({ likes });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/**GET "/user/:id" => {likes: [{like}, {...}]}
+ *
+ * Given a user id, returns all the likes from that user.
  *
  * Authorization required: login and correct user or admin
  */
@@ -83,56 +99,40 @@ router.get(
   ensureCorrectUserOrAdmin,
   async (req, res, next) => {
     try {
-      const comments = await Comment.findAllUser(req.params.id);
-      return res.json({ comments });
+      const likes = await Like.findLikesByUser(req.params.id);
+      return res.json({ likes });
     } catch (err) {
       return next(err);
     }
   }
 );
 
-/**GET /post/:id => {comments: [{comment}, {...}]}
+/**GET "/:id"  => {like}
  *
- * Given a post id, returns all comments for that post.
- *
- * Authorization required: login
- */
-
-router.get("/post/:id", ensureLoggedIn, async (req, res, next) => {
-  try {
-    const comments = await Comment.findCommentsByPost(req.params.id);
-    return res.json({ comments });
-  } catch (err) {
-    return next(err);
-  }
-});
-
-/**GET /:id => {comment} => {comment}}
- *
- * Given a comment id, returns a comment.
+ * Given a like id, returns the like.
  *
  * Authorization required: login
  */
 
 router.get("/:id", ensureLoggedIn, async (req, res, next) => {
   try {
-    const comment = await Comment.findOne(req.params.id);
-    return res.json({ comment });
+    const like = await Like.findOne(req.params.id);
+    return res.json({ like });
   } catch (err) {
     return next(err);
   }
 });
 
-/**PATCH /:id  => {comment} => {comment}
+/**PATCH /:id => {like} => {like}
  *
- * Given a comment id, edits the comment.
+ * Given a like id, edits the like.
  *
- * Only admin users or users who created the comments are allowed to edit it.
+ * Only admin users or users who created the like are allowed to edit it.
  *
  * Data can include:
- * {text, postId, date, time, creatorId}
+ * {postId, creatorId, time, date}
  *
- * Returns => {id, creatorId, text, postId, date, time, fullName}
+ * Returns => {id, postId, creatorId, time, date, fullName}
  *
  * Authorization required: login and correct user or admin
  */
@@ -140,7 +140,7 @@ router.get("/:id", ensureLoggedIn, async (req, res, next) => {
 router.patch("/:id", ensureLoggedIn, async (req, res, next) => {
   try {
     // check data submitted with schema
-    const validator = jsonschema.validate(req.body, commentUpdateSchema);
+    const validator = jsonschema.validate(req.body, likeUpdateSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
@@ -148,20 +148,20 @@ router.patch("/:id", ensureLoggedIn, async (req, res, next) => {
 
     // check if correct user or admin
     const currUser = res.locals.user;
-    const found = await Comment.findOne(req.params.id);
+    const found = await Like.findOne(req.params.id);
     checkUser(found, currUser);
 
-    // update comment
-    const comment = await Comment.update(req.params.id, req.body);
-    return res.json({ comment });
+    // update like
+    const like = await Like.update(req.params.id, req.body);
+    return res.json({ like });
   } catch (err) {
     return next(err);
   }
 });
 
-/**DELETE "/:id" => {deleted: Comment id "id"}
+/***DELETE "/:id" => {like} => {deleted: Like id: "id"}
  *
- * Deletes comment.
+ * Deletes like.
  *
  * Authorization required: login and correct user or admin
  */
@@ -170,15 +170,14 @@ router.delete("/:id", ensureLoggedIn, async (req, res, next) => {
   try {
     // check if correct user or admin
     const currUser = res.locals.user;
-    const found = await Comment.findOne(req.params.id);
+    const found = await Like.findOne(req.params.id);
     checkUser(found, currUser);
 
-    // remove comment
-    await Comment.remove(req.params.id);
-    return res.json({ deleted: `Comment id: ${req.params.id}` });
+    // remove like
+    await Like.remove(req.params.id);
+    return res.json({ deleted: `Like id: ${req.params.id}` });
   } catch (err) {
     return next(err);
   }
 });
-
 module.exports = router;

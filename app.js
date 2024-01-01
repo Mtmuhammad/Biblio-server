@@ -13,6 +13,7 @@ const bookRoutes = require("./routes/books");
 const collectionRoutes = require("./routes/collections");
 const commentRoutes = require("./routes/comments");
 const forumRoutes = require("./routes/forums");
+const likeRoutes = require("./routes/likes");
 const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
@@ -39,6 +40,7 @@ app.use("/books", bookRoutes)
 app.use("/collections", collectionRoutes)
 app.use("/comments", commentRoutes)
 app.use("/forums", forumRoutes)
+app.use("/likes", likeRoutes)
 
 /** Handle 404 errors -- this matches everything */
 app.use((req, res, next) => {

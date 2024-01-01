@@ -11,7 +11,7 @@ const { getCurrentTime } = require("../helpers/getCurrentTime");
 class Like {
   /** creates a new user like on a post.
    *
-   * Returns => {id, postId, creatorId, time, date, fullName}
+   * Returns => 
    *
    * Throws NotFoundError if creator does not exist.
    * Throws NotFoundError if post does not exist.

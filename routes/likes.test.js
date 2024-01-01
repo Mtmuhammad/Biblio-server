@@ -21,138 +21,140 @@ beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
-/******* POST /comments ******/
+/******* POST /likes ******/
 
-describe("POST /comments", () => {
-  const newComment = {
+describe("/POST /likes", () => {
+  const newLike = {
     creatorId: 1,
-    text: "Test comment 1",
-    postId: 1,
+    postId: 5,
   };
-  const newComment2 = {
+  const newLike2 = {
+    postId: 3,
     creatorId: 2,
-    text: "Test comment 2",
-    postId: 2,
   };
-  test("should allow user to post a comment", async () => {
+  test("should allow user to add a new like", async () => {
     const res = await request(app)
-      .post("/comments")
-      .send(newComment2)
+      .post("/likes")
+      .send(newLike2)
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toEqual(201);
     expect(res.body).toEqual({
-      comment: {
-        ...newComment2,
-        id: 7,
+      like: {
+        id: 8,
+        postId: 3,
+        creatorId: 2,
         date: getCurrentDate(),
         time: getCurrentTime(),
         fullName: "Test2 User2",
       },
     });
   });
-  test("should allow admin user to post a comment", async () => {
+  test("should allow admin user to add a new like", async () => {
     const res = await request(app)
-      .post("/comments")
-      .send(newComment)
+      .post("/likes")
+      .send(newLike)
       .set("authorization", `Bearer ${u1Token}`);
     expect(res.statusCode).toEqual(201);
     expect(res.body).toEqual({
-      comment: {
-        ...newComment,
-        id: 8,
+      like: {
+        id: 9,
+        postId: 5,
+        creatorId: 1,
         date: getCurrentDate(),
         time: getCurrentTime(),
         fullName: "Test1 User1",
       },
     });
   });
-  test("should throw BadRequestError for missing data", async () => {
+  test("should throw BaqRequestError for missing data", async () => {
     const res = await request(app)
-      .post("/comments")
-      .set("authorization", `Bearer ${u2Token}`);
+      .post("/likes")
+      .set("authorization", `Bearer ${u1Token}`);
     expect(res.statusCode).toEqual(400);
   });
-  test("should throw BadRequestError for invalid data", async () => {
+  test("should throw BaqRequestError for invalid data", async () => {
     const res = await request(app)
-      .post("/comments")
-      .send({ creatorId: 2, text: 3, postId: 2 })
-      .set("authorization", `Bearer ${u2Token}`);
+      .post("/likes")
+      .send({ creatorId: "yes", postId: 2 })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(res.statusCode).toEqual(400);
   });
   test("should throw UnauthorizedError for anon user", async () => {
     const res = await request(app)
-      .post("/comments")
-      .send({ creatorId: 2, text: "text", postId: 2 });
+      .post("/likes")
+      .send({ creatorId: "yes", postId: 2 });
     expect(res.statusCode).toEqual(401);
   });
   test("should throw NotFoundError for unknown user", async () => {
     const res = await request(app)
-      .post("/comments")
-      .send({ creatorId: 2, text: "text", postId: 2 })
+      .post("/likes")
+      .send({ creatorId: 1, postId: 2 })
       .set("authorization", `Bearer ${u3Token}`);
     expect(res.statusCode).toEqual(404);
   });
 });
 
-/****** GET /comments *****/
-describe("GET /comments", () => {
-  test("should work for user to get comments", async () => {
+/*****GET /likes *******/
+describe("GET /likes", () => {
+  test("should work for user to get all likes", async () => {
     const res = await request(app)
-      .get("/comments")
+      .get("/likes")
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comments: [
+      likes: [
         {
           id: 1,
-          creatorId: 1,
-          text: "This is the first test comment.",
           postId: 1,
+          creatorId: 1,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
         {
           id: 2,
-          creatorId: 2,
-          text: "This is the second test comment.",
           postId: 1,
+          creatorId: 2,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
         },
         {
           id: 3,
+          postId: 2,
           creatorId: 1,
-          text: "This is the third test comment.",
-          postId: 3,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
         {
           id: 4,
+          postId: 2,
           creatorId: 2,
-          text: "This is the fourth test comment.",
-          postId: 4,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
         },
         {
           id: 5,
+          postId: 3,
           creatorId: 1,
-          text: "This is the fifth test comment.",
-          postId: 5,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
         {
           id: 6,
+          postId: 4,
           creatorId: 2,
-          text: "This is the sixth test comment.",
-          postId: 6,
+          date: getCurrentDate(),
+          time: getCurrentTime(),
+          fullName: "Test2 User2",
+        },
+        {
+          id: 7,
+          postId: 5,
+          creatorId: 2,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
@@ -160,63 +162,65 @@ describe("GET /comments", () => {
       ],
     });
   });
-  test("should work for admin user to get comments", async () => {
+  test("should work for admin user to get all likes", async () => {
     const res = await request(app)
-      .get("/comments")
+      .get("/likes")
       .set("authorization", `Bearer ${u1Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comments: [
+      likes: [
         {
           id: 1,
-          creatorId: 1,
-          text: "This is the first test comment.",
           postId: 1,
+          creatorId: 1,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
         {
           id: 2,
-          creatorId: 2,
-          text: "This is the second test comment.",
           postId: 1,
+          creatorId: 2,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
         },
         {
           id: 3,
+          postId: 2,
           creatorId: 1,
-          text: "This is the third test comment.",
-          postId: 3,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
         {
           id: 4,
+          postId: 2,
           creatorId: 2,
-          text: "This is the fourth test comment.",
-          postId: 4,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
         },
         {
           id: 5,
+          postId: 3,
           creatorId: 1,
-          text: "This is the fifth test comment.",
-          postId: 5,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
         {
           id: 6,
+          postId: 4,
           creatorId: 2,
-          text: "This is the sixth test comment.",
-          postId: 6,
+          date: getCurrentDate(),
+          time: getCurrentTime(),
+          fullName: "Test2 User2",
+        },
+        {
+          id: 7,
+          postId: 5,
+          creatorId: 2,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
@@ -225,43 +229,108 @@ describe("GET /comments", () => {
     });
   });
   test("should throw UnauthorizedError for anon user", async () => {
-    const res = await request(app).get("/comments");
+    const res = await request(app).get("/likes");
     expect(res.statusCode).toBe(401);
   });
 });
 
-/****** GET /comments/user/:id *******/
-describe("GET /comments/user/:id", () => {
-  test("should work for user to get all user comments", async () => {
+/*****GET /likes/post/:id *******/
+describe("GET /likes/post/:id", () => {
+  test("should work for user to get likes on a post", async () => {
     const res = await request(app)
-      .get("/comments/user/2")
+      .get("/likes/post/2")
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comments: [
+      likes: [
+        {
+          id: 3,
+          postId: 2,
+          creatorId: 1,
+          date: getCurrentDate(),
+          time: getCurrentTime(),
+          fullName: "Test1 User1",
+        },
+        {
+          id: 4,
+          postId: 2,
+          creatorId: 2,
+          date: getCurrentDate(),
+          time: getCurrentTime(),
+          fullName: "Test2 User2",
+        },
+      ],
+    });
+  });
+  test("should work for admin user to get likes on a post", async () => {
+    const res = await request(app)
+      .get("/likes/post/1")
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual({
+      likes: [
+        {
+          id: 1,
+          postId: 1,
+          creatorId: 1,
+          date: getCurrentDate(),
+          time: getCurrentTime(),
+          fullName: "Test1 User1",
+        },
         {
           id: 2,
-          creatorId: 2,
-          text: "This is the second test comment.",
           postId: 1,
+          creatorId: 2,
+          date: getCurrentDate(),
+          time: getCurrentTime(),
+          fullName: "Test2 User2",
+        },
+      ],
+    });
+  });
+  test("should throw UnauthorizedError if anon user", async () => {
+    const res = await request(app).get("/likes/post/1");
+    expect(res.statusCode).toEqual(401);
+  });
+});
+
+/*****GET /likes/user/:id *******/
+describe("GET /likes/user/:id", () => {
+  test("should work to get user likes", async () => {
+    const res = await request(app)
+      .get("/likes/user/2")
+      .set("authorization", `Bearer ${u2Token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual({
+      likes: [
+        {
+          id: 2,
+          postId: 1,
+          creatorId: 2,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
         },
         {
           id: 4,
+          postId: 2,
           creatorId: 2,
-          text: "This is the fourth test comment.",
-          postId: 4,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
         },
         {
           id: 6,
+          postId: 4,
           creatorId: 2,
-          text: "This is the sixth test comment.",
-          postId: 6,
+          date: getCurrentDate(),
+          time: getCurrentTime(),
+          fullName: "Test2 User2",
+        },
+        {
+          id: 7,
+          postId: 5,
+          creatorId: 2,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test2 User2",
@@ -269,157 +338,81 @@ describe("GET /comments/user/:id", () => {
       ],
     });
   });
-  test("should work for admin to get all admin user comments", async () => {
+  test("should work to get user likes", async () => {
     const res = await request(app)
-      .get("/comments/user/1")
+      .get("/likes/user/1")
       .set("authorization", `Bearer ${u1Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comments: [
+      likes: [
         {
           id: 1,
-          creatorId: 1,
-          text: "This is the first test comment.",
           postId: 1,
+          creatorId: 1,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
         {
           id: 3,
+          postId: 2,
           creatorId: 1,
-          text: "This is the third test comment.",
-          postId: 3,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
         {
           id: 5,
+          postId: 3,
           creatorId: 1,
-          text: "This is the fifth test comment.",
-          postId: 5,
           date: getCurrentDate(),
           time: getCurrentTime(),
           fullName: "Test1 User1",
         },
       ],
     });
-  });
-  test("should throw UnauthorizedError if wrong user", async () => {
-    const res = await request(app)
-      .get("/comments/user/2")
-      .set("authorization", `Bearer ${u3Token}`);
-    expect(res.statusCode).toEqual(401);
-  });
-  test("should throw UnauthorizedError if not admin user", async () => {
-    const res = await request(app)
-      .get("/comments/user/1")
-      .set("authorization", `Bearer ${u2Token}`);
-    expect(res.statusCode).toEqual(401);
   });
   test("should throw UnauthorizedError if anon user", async () => {
-    const res = await request(app).get("/comments/user/1");
+    const res = await request(app).get("/likes/user/1");
+    expect(res.statusCode).toEqual(401);
+  });
+  test("should throw UnauthorizedError if wrong user or not admin", async () => {
+    const res = await request(app)
+      .get("/likes/user/1")
+      .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toEqual(401);
   });
 });
 
-/******GET /comments/post/:id *********/
+/*****GET /likes/:id *******/
 
-describe("GET /comments/post/:id", () => {
-  test("should work for user to get post comments", async () => {
+describe("GET /likes/:id", () => {
+  test("should work for user to get one like", async () => {
     const res = await request(app)
-      .get("/comments/post/1")
+      .get("/likes/2")
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comments: [
-        {
-          id: 1,
-          creatorId: 1,
-          text: "This is the first test comment.",
-          postId: 1,
-          date: getCurrentDate(),
-          time: getCurrentTime(),
-          fullName: "Test1 User1",
-        },
-        {
-          id: 2,
-          creatorId: 2,
-          text: "This is the second test comment.",
-          postId: 1,
-          date: getCurrentDate(),
-          time: getCurrentTime(),
-          fullName: "Test2 User2",
-        },
-      ],
-    });
-  });
-  test("should work for admin user to get post comments", async () => {
-    const res = await request(app)
-      .get("/comments/post/1")
-      .set("authorization", `Bearer ${u1Token}`);
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toEqual({
-      comments: [
-        {
-          id: 1,
-          creatorId: 1,
-          text: "This is the first test comment.",
-          postId: 1,
-          date: getCurrentDate(),
-          time: getCurrentTime(),
-          fullName: "Test1 User1",
-        },
-        {
-          id: 2,
-          creatorId: 2,
-          text: "This is the second test comment.",
-          postId: 1,
-          date: getCurrentDate(),
-          time: getCurrentTime(),
-          fullName: "Test2 User2",
-        },
-      ],
-    });
-  });
-  test("should throw UnauthorizedError for anon user", async () => {
-    const res = await request(app).get("/comments/post/1");
-    expect(res.statusCode).toEqual(401);
-  });
-});
-
-/******GET /comments/:id *******/
-
-describe("GET /comments/:id", () => {
-  test("should work for user to get one comment", async () => {
-    const res = await request(app)
-      .get("/comments/2")
-      .set("authorization", `Bearer ${u2Token}`);
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toEqual({
-      comment: {
+      like: {
         id: 2,
-        creatorId: 2,
-        text: "This is the second test comment.",
         postId: 1,
+        creatorId: 2,
         date: getCurrentDate(),
         time: getCurrentTime(),
         fullName: "Test2 User2",
       },
     });
   });
-  test("should work for admin user to get one comment", async () => {
+  test("should work for admin user to get one like", async () => {
     const res = await request(app)
-      .get("/comments/1")
+      .get("/likes/1")
       .set("authorization", `Bearer ${u1Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comment: {
+      like: {
         id: 1,
-        creatorId: 1,
-        text: "This is the first test comment.",
         postId: 1,
+        creatorId: 1,
         date: getCurrentDate(),
         time: getCurrentTime(),
         fullName: "Test1 User1",
@@ -427,142 +420,137 @@ describe("GET /comments/:id", () => {
     });
   });
   test("should throw UnauthorizedError for anon user", async () => {
-    const res = await request(app).get("/comments/1");
+    const res = await request(app).get("/likes/1");
     expect(res.statusCode).toEqual(401);
   });
 });
 
-/*****PATCH /comments/:id *******/
-describe("PATCH /comments/:id", () => {
-  test("should work for user to update on field", async () => {
+/*****PATCH /likes/:id *******/
+describe("PATCH /likes/:id", () => {
+  test("should work for user to update one like field", async () => {
     const res = await request(app)
-      .patch("/comments/2")
-      .send({ text: "This is a test." })
+      .patch("/likes/2")
+      .send({ postId: 2 })
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comment: {
+      like: {
         id: 2,
-        creatorId: 2,
-        text: "This is a test.",
-        postId: 1,
-        date: getCurrentDate(),
-        time: getCurrentTime(),
-        fullName: "Test2 User2",
-      },
-    });
-  });
-  test("should work for user to update multiple fields", async () => {
-    const res = await request(app)
-      .patch("/comments/2")
-      .send({ text: "This is a test.", postId: 2 })
-      .set("authorization", `Bearer ${u2Token}`);
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toEqual({
-      comment: {
-        id: 2,
-        creatorId: 2,
-        text: "This is a test.",
         postId: 2,
+        creatorId: 2,
         date: getCurrentDate(),
         time: getCurrentTime(),
         fullName: "Test2 User2",
       },
     });
   });
-  test("should work for admin user to update one field", async () => {
+  test("should work for user to update multiple like fields", async () => {
     const res = await request(app)
-      .patch("/comments/1")
-      .send({ text: "This is a test." })
+      .patch("/likes/2")
+      .send({ postId: 2, time: "now" })
+      .set("authorization", `Bearer ${u2Token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual({
+      like: {
+        id: 2,
+        postId: 2,
+        creatorId: 2,
+        date: getCurrentDate(),
+        time: "now",
+        fullName: "Test2 User2",
+      },
+    });
+  });
+  test("should work for admin user to update one like field", async () => {
+    const res = await request(app)
+      .patch("/likes/1")
+      .send({ postId: 1 })
       .set("authorization", `Bearer ${u1Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comment: {
+      like: {
         id: 1,
-        creatorId: 1,
-        text: "This is a test.",
         postId: 1,
+        creatorId: 1,
         date: getCurrentDate(),
         time: getCurrentTime(),
         fullName: "Test1 User1",
       },
     });
   });
-  test("should work for admin user to update multiple fields", async () => {
+  test("should work for admin user to update multiple like fields", async () => {
     const res = await request(app)
-      .patch("/comments/1")
-      .send({ text: "This is a test.", postId: 2 })
+      .patch("/likes/1")
+      .send({ postId: 1, time: "now" })
       .set("authorization", `Bearer ${u1Token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toEqual({
-      comment: {
+      like: {
         id: 1,
+        postId: 1,
         creatorId: 1,
-        text: "This is a test.",
-        postId: 2,
         date: getCurrentDate(),
-        time: getCurrentTime(),
+        time: "now",
         fullName: "Test1 User1",
       },
     });
   });
   test("should throw BadRequestError if invalid data submitted", async () => {
     const res = await request(app)
-      .patch("/comments/2")
-      .send({ text: 1 })
-      .set("authorization", `Bearer ${u2Token}`);
-    expect(res.statusCode).toBe(400);
+      .patch("/likes/1")
+      .send({ postId: "yes" })
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(res.statusCode).toEqual(400);
   });
-
   test("should throw UnauthorizedError if anon user", async () => {
-    const res = await request(app)
-      .patch("/comments/3")
-      .send({ isPrivate: "yes" });
-    expect(res.statusCode).toBe(401);
+    const res = await request(app).patch("/likes/1").send({ postId: "yes" });
+    expect(res.statusCode).toEqual(401);
   });
   test("should throw ForbiddenError if not admin or correct user", async () => {
     const res = await request(app)
-      .patch("/comments/1")
-      .send({ isPrivate: true })
+      .patch("/likes/1")
+      .send({ postId: 1 })
       .set("authorization", `Bearer ${u2Token}`);
-    expect(res.statusCode).toBe(403);
+    expect(res.statusCode).toEqual(403);
   });
-  test("should throw NotFoundError if comment doesn't exist", async () => {
+  test("should throw NotFoundError if like doesn't exist", async () => {
     const res = await request(app)
-      .patch("/comments/8")
-      .send({ isPrivate: true })
+      .patch("/likes/9")
+      .send({ postId: 1 })
       .set("authorization", `Bearer ${u2Token}`);
-    expect(res.statusCode).toBe(404);
+    expect(res.statusCode).toEqual(404);
   });
 });
 
-/******DELETE /comments/:id *******/
-describe("DELETE /comments/:id", () => {
-  test("should allow user to remove a comment", async () => {
+/*****DELETE /likes/:id *******/
+describe("DELETE /likes/:id", () => {
+  test("should work for user to delete a like", async () => {
     const res = await request(app)
-      .delete("/comments/2")
+      .delete("/likes/2")
       .set("authorization", `Bearer ${u2Token}`);
-    expect(res.body).toEqual({ deleted: "Comment id: 2" });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual({ deleted: "Like id: 2" });
   });
-  test("should allow admin user to remove a comment", async () => {
+  test("should work for admin user to delete a like", async () => {
     const res = await request(app)
-      .delete("/comments/1")
+      .delete("/likes/1")
       .set("authorization", `Bearer ${u1Token}`);
-    expect(res.body).toEqual({ deleted: "Comment id: 1" });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual({ deleted: "Like id: 1" });
   });
   test("should throw UnauthorizedError if anon user", async () => {
-    const res = await request(app).delete("/comments/1");
+    const res = await request(app).delete("/likes/1");
     expect(res.statusCode).toBe(401);
   });
   test("should throw ForbiddenError if not admin or correct user", async () => {
     const res = await request(app)
-      .delete("/comments/1")
+      .delete("/likes/1")
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toBe(403);
   });
-  test("should throw NotFoundError if comment doesn't exist", async () => {
+  test("should throw NotFoundError if like doesn't exist", async () => {
     const res = await request(app)
-      .delete("/comments/8")
+      .delete("/likes/8")
       .set("authorization", `Bearer ${u2Token}`);
     expect(res.statusCode).toBe(404);
   });

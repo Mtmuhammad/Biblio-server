@@ -1,0 +1,23 @@
+{
+   "$schema": "https://json-schema.org/draft/2019-09/schema",
+   "$id": "http://example.com/example.json",
+   "type": "object",
+   "required": [
+      "postId",
+      "creatorId"
+   ],
+   "properties": {
+      "postId": {
+         "type": "integer"
+      },
+      "creatorId": {
+         "type": "integer"
+      }
+   },
+   "examples": [
+      {
+         "postId": 2,
+         "creatorId": 1
+      }
+   ]
+}

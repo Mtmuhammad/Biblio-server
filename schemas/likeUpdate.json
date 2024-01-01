@@ -1,0 +1,27 @@
+{
+   "$schema": "https://json-schema.org/draft/2019-09/schema",
+   "$id": "http://example.com/example.json",
+   "type": "object",
+   "properties": {
+      "postId": {
+         "type": "integer"
+      },
+      "creatorId": {
+         "type": "integer"
+      },
+      "time": {
+         "type": "string"
+      },
+      "date": {
+         "type": "string"
+      }
+   },
+   "examples": [
+      {
+         "postId": 2,
+         "creatorId": 1,
+         "date": "12-28-2023",
+         "time": "5:32 PM"
+      }
+   ]
+}
