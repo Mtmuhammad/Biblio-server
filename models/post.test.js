@@ -272,13 +272,14 @@ describe("update", () => {
     expect(res).toEqual({
       creatorId: 2,
       date: getCurrentDate(),
-      forum: 3,
+      forum: "Marketplaces",
       id: 5,
       isPrivate: true,
       postText: "This is the fifth post description.",
-      subject: 3,
+      subject: "Help",
       title: "This is a test.",
       time: getCurrentTime(),
+      fullName: "Test2 User2",
     });
   });
   test("should update multiple user post fields", async () => {
@@ -290,13 +291,14 @@ describe("update", () => {
     expect(res).toEqual({
       creatorId: 2,
       date: getCurrentDate(),
-      forum: 3,
+      forum: "Marketplaces",
       id: 5,
       isPrivate: false,
       postText: "This is a test post field.",
-      subject: 3,
+      subject: "Help",
       title: "This is a test.",
       time: getCurrentTime(),
+      fullName: "Test2 User2",
     });
   });
   test("should update an admin user post field", async () => {
@@ -304,13 +306,14 @@ describe("update", () => {
     expect(res).toEqual({
       creatorId: 1,
       date: getCurrentDate(),
-      forum: 3,
+      forum: "Marketplaces",
       id: 6,
       isPrivate: true,
       postText: "This is the sixth post description.",
-      subject: 3,
+      subject: "Help",
       title: "This is a test.",
       time: getCurrentTime(),
+      fullName: "Test1 User1",
     });
   });
   test("should update multiple admin user post fields", async () => {
@@ -321,13 +324,14 @@ describe("update", () => {
     expect(res).toEqual({
       creatorId: 1,
       date: getCurrentDate(),
-      forum: 3,
+      forum: "Marketplaces",
       id: 6,
       isPrivate: false,
       postText: "This is the sixth post description.",
-      subject: 3,
+      subject: "Help",
       title: "This is a test.",
       time: getCurrentTime(),
+      fullName: "Test1 User1",
     });
   });
   test("should throw error if post not found", async () => {

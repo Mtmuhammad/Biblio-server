@@ -176,8 +176,8 @@ class Post {
     RETURNING id, creator_id AS "creatorId", to_char(date_created, 'MM-DD-YYYY') AS "date",
     title, post_text AS "postText", subject, forum, is_private AS "isPrivate", time`;
 
-    const result = await db.query(querySql, [...values, id]);
-    const post = result.rows[0];
+    await db.query(querySql, [...values, id]);
+    const post = await Post.findOne(id);
 
     // if no post found, throw error
     if (!post) throw new NotFoundError(`No post found!`);

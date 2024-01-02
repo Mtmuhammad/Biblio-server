@@ -1,0 +1,38 @@
+{
+   "$schema": "https://json-schema.org/draft/2019-09/schema",
+   "$id": "http://example.com/example.json",
+   "type": "object",
+   "required": [
+      "creatorId",
+      "title",
+      "postText",
+      "subject",
+      "forum"
+   ],
+   "properties": {
+      "creatorId": {
+         "type": "integer"
+      },
+      "title": {
+         "type": "string"
+      },
+      "postText": {
+         "type": "string"
+      },
+      "subject": {
+         "type": "integer"
+      },
+      "forum": {
+         "type": "integer"
+      }
+   },
+   "examples": [
+      {
+         "creatorId": 1,
+         "title": "First Test Post",
+         "postText": "This is the first test post text.",
+         "subject": 1,
+         "forum": 1
+      }
+   ]
+}
