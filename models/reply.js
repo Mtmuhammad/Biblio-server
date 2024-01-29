@@ -120,7 +120,7 @@ class Reply {
     return replies;
   }
 
-  /**Given a reply if, finds the individual reply.
+  /**Given a reply id, finds the individual reply.
    *
    * Returns => {id, creatorId, text, commentId, time, date, fullName}
    *
