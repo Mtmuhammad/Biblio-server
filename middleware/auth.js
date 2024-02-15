@@ -80,7 +80,7 @@ function ensureCorrectUserOrAdmin(req, res, next) {
 /** Function to check if logged in user is the correct user to modify or
  * view certain data.
  *
- * If not, raises ForbiddenError
+ * If not correct user or admin, raises ForbiddenError
  *
  * Returns undefined
  */
@@ -92,6 +92,10 @@ function checkUser(found, currUser) {
     }
   } else if (found.creatorId) {
     if (currUser.isAdmin !== true && found.creatorId !== currUser.id) {
+      throw new ForbiddenError();
+    }
+  } else {
+    if (currUser.isAdmin !== true && found.creator !== currUser.id) {
       throw new ForbiddenError();
     }
   }

@@ -1,0 +1,23 @@
+{
+   "$schema": "https://json-schema.org/draft/2019-09/schema",
+   "$id": "http://example.com/example.json",
+   "type": "object",
+   "required": [
+      "name",
+      "creator"
+   ],
+   "properties": {
+      "creator": {
+         "type": "integer"
+      },
+      "name": {
+         "type": "string"
+      }
+   },
+   "examples": [
+      {
+         "name": "help",
+         "creator": 2
+      }
+   ]
+}
