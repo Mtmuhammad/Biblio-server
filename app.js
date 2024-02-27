@@ -17,6 +17,7 @@ const likeRoutes = require("./routes/likes");
 const postRoutes = require("./routes/posts");
 const replyRoutes = require("./routes/replies");
 const subjectRoutes = require("./routes/subjects");
+const userRoutes = require("./routes/users");
 const { authenticateJWT } = require("./middleware/auth");
 
 const app = express();
@@ -47,6 +48,7 @@ app.use("/likes", likeRoutes)
 app.use("/posts", postRoutes)
 app.use("/replies", replyRoutes)
 app.use("/subjects", subjectRoutes)
+app.use("/users", userRoutes)
 
 /** Handle 404 errors -- this matches everything */
 app.use((req, res, next) => {

@@ -1,0 +1,31 @@
+{
+   "$schema": "https://json-schema.org/draft/2019-09/schema",
+   "$id": "http://example.com/example.json",
+   "type": "object",
+   "properties": {
+      "firstName": {
+         "type": "string"
+      },
+      "lastName": {
+         "type": "string"
+      },
+      "email": {
+         "type": "string"
+      },
+      "password": {
+         "type": "string"
+      },
+      "isAdmin": {
+         "type": "boolean"
+      }
+   },
+   "examples": [
+      {
+         "firstName": "Test1",
+         "lastName": "Test2",
+         "email": "test@email.com",
+         "password": "password1!",
+         "isAdmin": false
+      }
+   ]
+}
