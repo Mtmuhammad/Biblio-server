@@ -1,8 +1,38 @@
 const bcrypt = require("bcrypt");
 const db = require("../db");
 const { BCRYPT_WORK_FACTOR } = require("../config");
-const { createToken } = require("../helpers/tokens");
+const { createToken, createRefreshToken } = require("../helpers/tokens");
 const { getCurrentTime } = require("../helpers/getCurrentTime");
+
+const u1Token = createToken({
+  id: 1,
+  email: "test1@yahoo.com",
+  isAdmin: true,
+});
+const u1Refresh = createRefreshToken({
+  email: "test1@yahoo.com",
+  id: 1,
+  firstName: "Test1",
+  isAdmin: true,
+  lastName: "User1",
+});
+const u2Token = createToken({
+  id: 2,
+  email: "test2@yahoo.com",
+  isAdmin: false,
+});
+const u2Refresh = createRefreshToken({
+  email: "test2@yahoo.com",
+  id: 2,
+  firstName: "Test2",
+  isAdmin: false,
+  lastName: "User2",
+});
+const u3Token = createToken({
+  id: 5,
+  email: "test3@yahoo.com",
+  isAdmin: false,
+});
 
 async function commonBeforeAll() {
   // no inspection SqlWithoutWhere
@@ -76,7 +106,8 @@ async function commonBeforeAll() {
 
   let currentTime = getCurrentTime();
   // insert post test data
-  await db.query(`
+  await db.query(
+    `
   INSERT INTO posts
   (creator_id, title, post_text, subject, forum, is_private,  time)
   VALUES
@@ -85,10 +116,12 @@ async function commonBeforeAll() {
   (2, 'This is the third post.', 'This is the third post description.', 2, 2, false, $1),
   (2, 'This is the fourth post.', 'This is the fourth post description.', 2, 2, true, $1),
   (2, 'This is the fifth post.', 'This is the fifth post description.', 3, 3, true, $1),
-  (1, 'This is the sixth post.', 'This is the sixth post description.', 3, 3, true, $1)`, [currentTime]);
+  (1, 'This is the sixth post.', 'This is the sixth post description.', 3, 3, true, $1)`,
+    [currentTime]
+  );
 
   //insert comment test data
-  
+
   await db.query(
     `
   INSERT INTO comments
@@ -149,22 +182,6 @@ async function commonAfterAll() {
   await db.end();
 }
 
-const u1Token = createToken({
-  id: 1,
-  email: "new1@yahoo.com",
-  isAdmin: true,
-});
-const u2Token = createToken({
-  id: 2,
-  email: "new2@yahoo.com",
-  isAdmin: false,
-});
-const u3Token = createToken({
-  id: 5,
-  email: "new3@yahoo.com",
-  isAdmin: false,
-});
-
 module.exports = {
   commonAfterAll,
   commonAfterEach,
@@ -173,4 +190,6 @@ module.exports = {
   u1Token,
   u2Token,
   u3Token,
+  u1Refresh,
+  u2Refresh,
 };
